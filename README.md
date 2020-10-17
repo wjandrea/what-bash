@@ -10,6 +10,37 @@ Along with it is `symlink_info`, which details complicated symlinks. `what` uses
 
 Source `what.sh` to get the function `what`. The script can also be run directly, but it's not recommended since it won't have access to the shell environment like aliases.
 
+### Example
+
+```none
+$ what if type what awk sh ls
+if
+    keyword
+type
+    builtin
+what
+    function
+        source: /home/wja/scripts/lib/bash/what.sh:348
+        export: no
+awk
+    file
+        /usr/bin/awk
+            symlink: /etc/alternatives/awk
+            symlink: /usr/bin/mawk
+        file type: ELF 64-bit LSB shared object
+sh
+    file
+        /bin/sh
+            symlink: dash
+            canonical path: /bin/dash
+        file type: ELF 64-bit LSB shared object
+ls
+    alias
+        possible source: /home/wja/.bash_aliases
+    file
+        file type: ELF 64-bit LSB shared object
+```
+
 ### Help
 
 ```none
@@ -64,37 +95,6 @@ For example:
 
 Known issues:
     - Some versions of Bash have different output between "type COMMAND" and "type -a COMMAND" if COMMAND is a file but is not executable. "what" will error if affected.
-```
-
-### Example
-
-```none
-$ what if type what awk sh ls
-if
-    keyword
-type
-    builtin
-what
-    function
-        source: /home/wja/scripts/lib/bash/what.sh:348
-        export: no
-awk
-    file
-        /usr/bin/awk
-            symlink: /etc/alternatives/awk
-            symlink: /usr/bin/mawk
-        file type: ELF 64-bit LSB shared object
-sh
-    file
-        /bin/sh
-            symlink: dash
-            canonical path: /bin/dash
-        file type: ELF 64-bit LSB shared object
-ls
-    alias
-        possible source: /home/wja/.bash_aliases
-    file
-        file type: ELF 64-bit LSB shared object
 ```
 
 ## `symlink_info`
