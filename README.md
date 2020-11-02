@@ -2,7 +2,7 @@
 
 `what` is a Bash function that gets info about a command, like what exactly it is and where.
 
-Along with it is `symlink_info`, which details complicated symlinks. `what` uses it on symlinked executable files.
+Along with it is `symlink-info`, which details complicated symlinks. `what` uses it on symlinked executable files.
 
 ## `what`
 
@@ -97,7 +97,7 @@ Known issues:
     - Some versions of Bash have different output between "type COMMAND" and "type -a COMMAND" if COMMAND is a file but is not executable. "what" will error if affected.
 ```
 
-## `symlink_info`
+## `symlink-info`
 
 Resolve a symlink, recursively and canonically
 
@@ -106,7 +106,7 @@ Resolve a symlink, recursively and canonically
 Borrowing from the above `what` example:
 
 ```none
-$ symlink_info /usr/bin/awk /bin/sh
+$ symlink-info /usr/bin/awk /bin/sh
 /usr/bin/awk
     symlink: /etc/alternatives/awk
     symlink: /usr/bin/mawk
@@ -135,7 +135,7 @@ Everything else is your choice.
 
 * Add colour
 
-`symlink_info`
+`symlink-info`
 
 * Break into functions
 
