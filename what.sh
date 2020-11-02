@@ -32,7 +32,6 @@ _what_alias()(
         done <<< "$matches"
     else
         _what_alias_match_parse
-        exit=1
     fi
 
     if [[ $print_definition == true ]]; then
@@ -41,8 +40,6 @@ _what_alias()(
         printf "definition: "
         alias -- "$alias"
     fi
-
-    return $exit
 )
 
 _what_alias_match_parse(){
