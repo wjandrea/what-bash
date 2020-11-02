@@ -12,8 +12,15 @@ _indent(){
 exit=0
 
 for path; do
-    if ! [[ -L $path ]]; then
-        printf >&2 '%s: Not a symlink: %s\n' "$0" "$path"
+    problem=
+    if ! [[ -e $path ]]; then
+        problem='No such file'
+    elif ! [[ -L $path ]]; then
+        problem='Not a symlink'
+    fi
+
+    if [[ $problem ]]; then
+        printf >&2 '%s: %s: %s\n' "$0" "$problem" "$path"
         exit=1
         continue
     fi
