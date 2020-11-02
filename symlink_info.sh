@@ -9,6 +9,7 @@ _indent(){
     done
 }
 
+basename=$(basename -- "$0")  # For error messages
 exit=0
 
 for path; do
@@ -20,7 +21,7 @@ for path; do
     fi
 
     if [[ $problem ]]; then
-        printf >&2 '%s: %s: %s\n' "$0" "$problem" "$path"
+        printf >&2 '%s: %s: %s\n' "$basename" "$problem" "$path"
         exit=1
         continue
     fi

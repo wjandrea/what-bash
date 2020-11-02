@@ -89,7 +89,7 @@ _what_command()(
         return 1
     else
         # Command not found.
-        printf >&2 '%s: %s: %s: Not found\n' "$0" "$funcname" "$command"
+        printf >&2 '%s: %s: %s: Not found\n' "$basename" "$funcname" "$command"
         return 1
     fi
 
@@ -128,7 +128,7 @@ _what_command()(
         *)
             # This should never happen.
             printf >&2 '%s: %s: %s: Invalid type: %s\n' \
-                "$0" \
+                "$basename" \
                 "$funcname" \
                 "$command" \
                 "$type"
@@ -164,7 +164,7 @@ _what_executable_bug(){
 
         if [[ $problem ]]; then
             printf >&2 '%s: %s: %s: %s: %s\n' \
-                "$0" \
+                "$basename" \
                 "$funcname" \
                 "$command" \
                 "$problem" \
@@ -268,7 +268,7 @@ _what_hashed(){
 
         if ! [[ -f $hashpath ]]; then
             printf >&2 '%s: %s: %s: Hashed file does not exist: %s\n' \
-                "$0" \
+                "$basename" \
                 "$funcname" \
                 "$command" \
                 "$hashpath"
@@ -352,6 +352,8 @@ what()(
 
     exit=0
 
+    # Basename of caller, for error messages
+    basename=$(basename -- "$0")
     # Name of the main function, for error messages.
     funcname="${FUNCNAME[0]}"
 
@@ -368,7 +370,7 @@ what()(
         n)
             if ! [[ -f /usr/lib/command-not-found ]]; then
                 printf >&2 '%s: %s: Missing required program for "-n": %s\n' \
-                    "$0" \
+                    "$basename" \
                     "$funcname" \
                     "/usr/lib/command-not-found"
                 exit 3
@@ -380,7 +382,7 @@ what()(
             ;;
         *)
             printf >&2 '%s: %s: Invalid option: -%s\n' \
-                "$0" \
+                "$basename" \
                 "$funcname" \
                 "$OPTARG"
             _what_usage >&2
@@ -414,5 +416,7 @@ complete -c what
 # End sourced section
 return 2>/dev/null
 
-printf '%s: Warning: This script is intended to be sourced from Bash, to provide the function "what".\n' "$0" >&2
+printf >&2 \
+    '%s: Warning: This script is intended to be sourced from Bash, to provide the function "what".\n' \
+    "$(basename -- "$0")"
 what "$@"
