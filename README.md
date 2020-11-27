@@ -1,6 +1,6 @@
 # what-bash
 
-`what` is a Bash function that gets info about a command, like what exactly it is and where.
+`what` is a Bash function that gets info about a command, like what exactly it is and where. It can help with understanding a command's behaviour and troubleshooting issues. For example, if you run an executable, delete it, then try running it again, Bash may remember its path and try to run the file that you just deleted, leading to a confusing error message.
 
 Along with it is `symlink-info`, which details complicated symlinks. `what` uses it on symlinked executable files.
 
@@ -8,7 +8,9 @@ Along with it is `symlink-info`, which details complicated symlinks. `what` uses
 
 ### Usage
 
-Source `what.sh` to get the function `what`. The script can also be run directly, but it's not recommended since it won't have access to the shell environment like aliases.
+Source `what.sh` to get the function `what`. (The script can also be run directly, but it's not recommended since it won't have access to the shell environment like aliases.)
+
+Then run `what` with the names of commands.
 
 ### Example
 
@@ -40,6 +42,8 @@ ls
     file
         file type: ELF 64-bit LSB shared object
 ```
+
+(This was run on my computer running Ubuntu 18.04.)
 
 ### Help
 
@@ -117,15 +121,21 @@ $ symlink-info /usr/bin/awk /bin/sh
 
 ## Installation
 
-If you want command name completions, add `complete -c what` to your shell startup.
+`what` requires `symlink-info.sh` in the `$PATH` as `symlink-info`.
 
-Everything else is your choice.
+Everything else is your choice. For example you might want to put `what.sh` in your `$PATH`, then `source what.sh` on shell startup, so that you always have `what` available.
+
+If you want command name completions, run `complete -c what`.
 
 ### Requirements
 
 * Bash 4.3+
-    * Untested on earlier versions
+    * Untested on earlier versions, and most later versions for that matter
 * Intended for Debian/Ubuntu, but should work on other Linux distros
+
+## Development
+
+If you're editing `what.sh`, don't forget to source it before running it again, e.g. `source what.sh; what ...`
 
 ## Roadmap
 
@@ -137,7 +147,7 @@ Everything else is your choice.
 
 `symlink-info`
 
-* Break into functions
+* Break into functions to allow sourcing from `what` for quicker execution on slow systems
 
 ## License
 
