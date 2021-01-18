@@ -1,6 +1,6 @@
 # what-bash
 
-`what` is a Bash function that gets info about a command, like what exactly it is and where. It can help with understanding a command's behaviour and troubleshooting issues. For example, if you run an executable, delete it, then try running it again, Bash may remember its path and try to run the file that you just deleted, leading to a confusing error message.
+`what` is a Bash function that gets info about a command, like what exactly it is and where. It can help with understanding a command's behaviour and troubleshooting issues. For example, if you run an executable, delete it, then try running it again, Bash may try to run the file that you just deleted (due to pathname hashing), leading to a confusing error message.
 
 Along with it is `symlink-info`, which details complicated symlinks. `what` uses it on symlinked executable files.
 
@@ -8,9 +8,9 @@ Along with it is `symlink-info`, which details complicated symlinks. `what` uses
 
 ### Usage
 
-Source `what.sh` to get the function `what`. (The script can also be run directly, but it's not recommended since it won't have access to the shell environment like aliases.)
+Source `what.sh` to get the function `what`. Then run `what` with the names of commands.
 
-Then run `what` with the names of commands.
+`what.sh` can also be run directly, but it's not recommended since it won't have access to the active shell environment, e.g. aliases.
 
 ### Example
 
