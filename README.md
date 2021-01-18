@@ -22,17 +22,17 @@ type
     builtin
 what
     function
-        source: /home/wja/scripts/lib/bash/what.sh:348
+        source: /home/wja/.local/lib/bash/what.sh:348
         export: no
 awk
     file
-        /usr/bin/awk
+        path: /usr/bin/awk
             symlink: /etc/alternatives/awk
             symlink: /usr/bin/mawk
         file type: ELF 64-bit LSB shared object
 sh
     file
-        /bin/sh
+        path: /bin/sh
             symlink: dash
             canonical path: /bin/dash
         file type: ELF 64-bit LSB shared object
@@ -40,6 +40,7 @@ ls
     alias
         possible source: /home/wja/.bash_aliases
     file
+        path: /bin/ls
         file type: ELF 64-bit LSB shared object
 ```
 
