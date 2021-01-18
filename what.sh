@@ -241,8 +241,7 @@ _what_function()(
         # Print the function definition.
         _what_indent 2
         printf 'definition:\n'
-        while IFS= read -r line
-        do
+        while IFS= read -r line; do
             _what_indent 3
             printf '%s\n' "$line"
         done <<< "$(declare -f -- "$function")"
