@@ -286,10 +286,20 @@ Arguments:
 Options:
     -d      Print definitions for aliases and functions.
     -h      Print this help message and exit.
+    -i      Print the info message and exit.
     -n      Provide more info if a command is not found.
             Uses "/usr/lib/command-not-found" (available on Debian/Ubuntu)
     -t      Print only types, similar to "type -at".
 
+Exit Status:
+    3 - Invalid options
+    1 - At least one NAME is not found, or any other error
+    0 - otherwise
+EOF
+}
+
+_what_info(){
+    cat <<'EOF'
 Info provided per type (types ordered by precedence):
     alias
         - possible source file and line number
@@ -313,11 +323,6 @@ Always iterates over multiple types/instances, e.g:
     - echo: builtin and file
     - zsh: two files on Debian
 
-Exit Status:
-    3 - Invalid options
-    1 - At least one NAME is not found, or any other error
-    0 - otherwise
-
 For example:
     "what if type ls what zsh sh /"
     - Covers keyword, builtin, alias/file, function, multiple files/absolute symlinks, relative symlink (on Debian/Ubuntu), and non-command.
@@ -328,7 +333,7 @@ EOF
 }
 
 _what_usage(){
-    printf 'Usage: what [-h] [-dnt] [name ...]\n'
+    printf 'Usage: what [-hi] [-dnt] [name ...]\n'
 }
 
 what()(
@@ -350,13 +355,17 @@ what()(
     funcname="${FUNCNAME[0]}"
 
     OPTIND=1
-    while getopts :dhnt OPT; do
+    while getopts :dhint OPT; do
         case $OPT in
         d)
             print_definition=true
             ;;
         h)
             _what_help
+            exit 0
+            ;;
+        i)
+            _what_info
             exit 0
             ;;
         n)

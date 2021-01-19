@@ -23,15 +23,20 @@ Source `what.sh` to get the function `what`. Then run `what` with the names of c
 Show basic info about a variety of commands:
 
 ```none
-$ what if type what awk sh ls
+$ what if type find what
 if
     keyword
 type
     builtin
+find
+    file
+        path: /usr/bin/find
+        file type: ELF 64-bit LSB shared object
 what
     function
         source: /home/wja/.local/lib/bash/what.sh:348
         export: no
+$ what awk sh ls  # A bit more complex
 awk
     file
         path: /usr/bin/awk
@@ -75,7 +80,7 @@ ll
 
 Note that the source of a function can be traced, but not an alias. `what` basically guesses at alias sources. Specifically, it tries to find the source in the most common files, using a regex.
 
-```
+```none
 $ alias ll='do_something_else'
 $ what -d ll
 ll
@@ -88,16 +93,16 @@ ll
 #### Show a problem with a hashed path
 
 ```none
-$ hash -p /nonexistent FAKE_COMMAND
+$ hash -p /nonexistent FAKE_COMMAND  # Create a bad hash
 $ what FAKE_COMMAND
 bash: what: FAKE_COMMAND: File does not exist: /nonexistent
 ```
 
-### Help
+### Help and info
 
 ```none
 $ what -h
-Usage: what [-h] [-dnt] [name ...]
+Usage: what [-hi] [-dnt] [name ...]
 
 Give information about Bash command names, like a more thorough "type".
 
@@ -108,10 +113,16 @@ Arguments:
 Options:
     -d      Print definitions for aliases and functions.
     -h      Print this help message and exit.
+    -i      Print the info message and exit.
     -n      Provide more info if a command is not found.
             Uses "/usr/lib/command-not-found" (available on Debian/Ubuntu)
     -t      Print only types, similar to "type -at".
 
+Exit Status:
+    3 - Invalid options
+    1 - At least one NAME is not found, or any other error
+    0 - otherwise
+$ what -i
 Info provided per type (types ordered by precedence):
     alias
         - possible source file and line number
@@ -134,11 +145,6 @@ Info provided per type (types ordered by precedence):
 Always iterates over multiple types/instances, e.g:
     - echo: builtin and file
     - zsh: two files on Debian
-
-Exit Status:
-    3 - Invalid options
-    1 - At least one NAME is not found, or any other error
-    0 - otherwise
 
 For example:
     "what if type ls what zsh sh /"
