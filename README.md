@@ -171,7 +171,7 @@ $ symlink-info /usr/bin/awk /bin/sh
 
 Put all three scripts in the `$PATH` so that they can `source` each other.
 
-Everything else is your choice. For example, you might want to put `source what.sh` in your bashrc so that you always have `what` available.
+Everything else is your choice. For example, you might want to put `source what.sh` in your bashrc so that you always have `what` available. You might also want to put `symlink-info.sh` and `indenter.sh` in your `$PATH` as `symlink-info` and `indenter` so you can call them like that from other tools.
 
 If you want command name completions, run `complete -c what`, which is included in `what.sh`.
 
