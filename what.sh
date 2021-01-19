@@ -197,9 +197,9 @@ _what_filepath()(
 
     # If the file is a symlink.
     if [[ -L $path ]]; then
-        symlink-info "$path" |
+        symlink_info "$path" |
             tail +2 |
-            indenter_many 2
+            indenter_many 2  # symlink_info already adds 1 indentation
     fi
 
     # Show brief file info.
@@ -337,7 +337,10 @@ what()(
 
     unset IFS  # Just in case
 
+    # Get functions "indenter" and "indenter_many"
     source indenter.sh || return 1
+    # Get functions "symlink_info"
+    source symlink-info.sh || return 1
 
     # Defaults
     exit=0

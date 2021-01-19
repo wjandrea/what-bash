@@ -191,10 +191,6 @@ If you're editing `what.sh`, don't forget to source it before running it again, 
 
 * Add colour
 
-`symlink-info`
-
-* Break into functions to allow sourcing from `what` for quicker execution on slow systems
-
 ## License
 
 GNU GPLv3
