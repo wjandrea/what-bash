@@ -27,16 +27,16 @@ _what_alias()(
     # Print matches.
     # "while" loop accounts for multiple.
     if [[ $matches ]]; then
-        while read -r match; do
+        printf '%s\n' "$matches" | while read -r match; do
             _what_alias_match_parse "$match"
-        done <<< "$matches"
+        done
     else
         _what_alias_match_parse
     fi
 
     if [[ $print_definition == true ]]; then
         # Print the *current* definition.
-        _what_indent 2
+        indenter 2
         printf "definition: "
         alias -- "$alias"
     fi
@@ -48,19 +48,19 @@ _what_alias_match_parse(){
     local line_num
 
     if [[ -z $match ]]; then
-        _what_indent 2
+        indenter 2
         printf 'possible source: %s\n' '(not found)'
         return
     fi
 
     IFS=: read -r filename line_num line <<< "$match"
 
-    _what_indent 2
+    indenter 2
     printf 'possible source: %s:%s\n' "$filename" "$line_num"
 
     if [[ $print_definition == true ]]; then
         # Print the definition *from the file*.
-        _what_indent 3
+        indenter 3
         printf "definition: "
         sed 's/^ *//; s/ *$//' <<< "$line"  # Strip surrounding whitespace
     fi
@@ -99,7 +99,7 @@ _what_command()(
 
     # Iterate over multiple types/instances of the command.
     for type in $(type -at -- "$command"); do
-        _what_indent 1
+        indenter 1
         printf '%s\n' "$type"
 
         if [[ $print_type_only == true ]]; then
@@ -192,19 +192,18 @@ _what_filepath()(
 
     path="$1"
 
-    _what_indent 2
+    indenter 2
     printf 'path: %s\n' "$path"
 
     # If the file is a symlink.
     if [[ -L $path ]]; then
-        while IFS= read -r line; do
-            _what_indent 2
-            printf '%s\n' "$line"
-        done <<< "$(symlink-info "$path" | tail +2)"
+        symlink-info "$path" |
+            tail +2 |
+            indenter_many 2
     fi
 
     # Show brief file info.
-    _what_indent 2
+    indenter 2
     printf 'file type: '
     file -bL -- "$path" |
         cut -d, -f1
@@ -225,11 +224,11 @@ _what_function()(
         )"
 
     # Print.
-    _what_indent 2
+    indenter 2
     printf 'source: %s:%s\n' "$filename" "$line_num"
 
     # Print export status.
-    _what_indent 2
+    indenter 2
     printf 'export: '
     if [[ $attrs == *x* ]]; then
         echo yes
@@ -239,12 +238,10 @@ _what_function()(
 
     if [[ $print_definition == true ]]; then
         # Print the function definition.
-        _what_indent 2
+        indenter 2
         printf 'definition:\n'
-        while IFS= read -r line; do
-            _what_indent 3
-            printf '%s\n' "$line"
-        done <<< "$(declare -f -- "$function")"
+        declare -f -- "$function" |
+            indenter_many 3
     fi
 )
 
@@ -255,14 +252,14 @@ _what_hashed(){
     command="$1"
 
     if hashpath="$(hash -t -- "$command" 2>/dev/null)"; then
-        _what_indent 1
+        indenter 1
         printf 'hashed\n'
 
         if [[ $print_type_only == true ]]; then
             return
         fi
 
-        _what_indent 2
+        indenter 2
         printf 'path: %s\n' "$hashpath"
 
         if ! [[ -f $hashpath ]]; then
@@ -331,15 +328,6 @@ Known issues:
 EOF
 }
 
-_what_indent(){
-    # Indent by given number of indent levels.
-    local indent_string='    '
-    local end="$1"
-    for ((i=1; i<="$end"; i++)); do
-        printf '%s' "$indent_string"
-    done
-}
-
 _what_usage(){
     printf 'Usage: what [-h] [-dnt] [name ...]\n'
 }
@@ -349,6 +337,9 @@ what()(
 
     unset IFS  # Just in case
 
+    source indenter.sh || return 1
+
+    # Defaults
     exit=0
 
     # Basename of caller, for error messages

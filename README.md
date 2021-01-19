@@ -4,6 +4,8 @@
 
 Along with it is `symlink-info`, which details complicated symlinks. `what` uses it on symlinked executable files.
 
+As well, there's `indenter`, which just prints indentation. Both `what` and `symlink-info` use it for formatting their output.
+
 ## `what`
 
 ### Usage
@@ -167,11 +169,11 @@ $ symlink-info /usr/bin/awk /bin/sh
 
 ## Installation
 
-`what` requires `symlink-info.sh` in the `$PATH` as `symlink-info`.
+Put all three scripts in the `$PATH` so that they can `source` each other.
 
-Everything else is your choice. For example you might want to put `what.sh` in your `$PATH`, then `source what.sh` on shell startup, so that you always have `what` available.
+Everything else is your choice. For example, you might want to put `source what.sh` in your bashrc so that you always have `what` available.
 
-If you want command name completions, run `complete -c what`.
+If you want command name completions, run `complete -c what`, which is included in `what.sh`.
 
 ### Requirements
 
@@ -184,8 +186,6 @@ If you want command name completions, run `complete -c what`.
 If you're editing `what.sh`, don't forget to source it before running it again, e.g. `source what.sh; what ...`
 
 ## Roadmap
-
-* Break the indentation functions into their own script
 
 `what`
 

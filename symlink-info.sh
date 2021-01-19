@@ -1,13 +1,6 @@
 #!/bin/bash
 
-_indent(){
-    # Indent by given number of indent levels.
-    local indent_string='    '
-    local end="$1"
-    for ((i=1; i<="$end"; i++)); do
-        printf '%s' "$indent_string"
-    done
-}
+source indenter.sh || exit 1  # Get function "indenter"
 
 basename=$(basename -- "$0")  # For error messages
 exit=0
@@ -32,7 +25,7 @@ for path; do
         link_deref="$(readlink -- "$path")"
 
         # Print the dereferenced file info.
-        _indent 1
+        indenter 1
         printf 'symlink: %s\n' "$link_deref"
 
         # If deref'd path starts with a slash.
@@ -48,7 +41,7 @@ for path; do
     # Canonical path
     path_canonical="$(readlink -m -- "$path")"
     if [[ $path_canonical != "$link_deref" ]]; then
-        _indent 1
+        indenter 1
         printf 'canonical path: %s\n' "$path_canonical"
     fi
 done
