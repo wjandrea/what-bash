@@ -306,8 +306,7 @@ Info provided per type (types ordered by precedence):
         - (if hashed file does not exist: warning)
     file
         - path
-            - (if symlink: target, recursively)
-            - (if relative symlink: canonical path)
+            - (if symlink: details from "symlink_info")
         - file type
 
 Always iterates over multiple types/instances, e.g:
