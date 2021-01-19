@@ -1,6 +1,6 @@
 # what-bash
 
-`what` is a Bash function that gets info about a command, like what exactly it is and where. It can help with understanding a command's behaviour and troubleshooting issues. For example, if you run an executable, delete it, then try running it again, Bash may try to run the file that you just deleted (due to pathname hashing), leading to a confusing error message.
+`what` is a Bash function that gets info about a command, like what exactly it is and where. It can help with understanding a command's behaviour and troubleshooting issues. For example, if you run an executable, delete it, then try running it again, Bash may try to run the file that you just deleted (due to pathname hashing), leading to a confusing error message. `what` will tell you about that problem.
 
 Along with it is `symlink-info`, which details complicated symlinks. `what` uses it on symlinked executable files.
 
@@ -12,7 +12,13 @@ Source `what.sh` to get the function `what`. Then run `what` with the names of c
 
 `what.sh` can also be run directly, but it's not recommended since it won't have access to the active shell environment, e.g. aliases.
 
-### Example
+### Examples
+
+(I ran these on my computer running Ubuntu 18.04.)
+
+#### Basic usage
+
+Show basic info about a variety of commands:
 
 ```none
 $ what if type what awk sh ls
@@ -44,7 +50,46 @@ ls
         file type: ELF 64-bit LSB shared object
 ```
 
-(This was run on my computer running Ubuntu 18.04.)
+### Show definitions of aliases and functions
+
+```none
+$ function foo { bar; }
+$ what -d foo ll
+foo
+    function
+        source: main:2
+        export: no
+        definition:
+            foo ()
+            {
+                bar
+            }
+ll
+    alias
+        possible source: /home/wja/.bash_aliases:25
+            definition: alias ll='ls -alF'  # all, long, classified
+        definition: alias ll='ls -alF'
+```
+
+Note that the source of a function can be traced, but not an alias. `what` basically guesses at alias sources. Specifically, it tries to find the source in the most common files, using a regex.
+
+```
+$ alias ll='do_something_else'
+$ what -d ll
+ll
+    alias
+        possible source: /home/wja/.bash_aliases:25
+            definition: alias ll='ls -alF'  # all, long, classified
+        definition: alias ll='do_something_else'
+```
+
+#### Show a problem with a hashed path
+
+```none
+$ hash -p /nonexistent FAKE_COMMAND
+$ what FAKE_COMMAND
+bash: what: FAKE_COMMAND: File does not exist: /nonexistent
+```
 
 ### Help
 
