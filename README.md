@@ -96,11 +96,11 @@ $ what FAKE_COMMAND
 bash: what: FAKE_COMMAND: File does not exist: /nonexistent
 ```
 
-### Help
+### Help and info
 
 ```none
 $ what -h
-Usage: what [-h] [-dnt] [name ...]
+Usage: what [-hi] [-dnt] [name ...]
 
 Give information about Bash command names, like a more thorough "type".
 
@@ -111,10 +111,16 @@ Arguments:
 Options:
     -d      Print definitions for aliases and functions.
     -h      Print this help message and exit.
+    -i      Print the info message and exit.
     -n      Provide more info if a command is not found.
             Uses "/usr/lib/command-not-found" (available on Debian/Ubuntu)
     -t      Print only types, similar to "type -at".
 
+Exit Status:
+    3 - Invalid options
+    1 - At least one NAME is not found, or any other error
+    0 - otherwise
+$ what -i
 Info provided per type (types ordered by precedence):
     alias
         - possible source file and line number
@@ -138,11 +144,6 @@ Info provided per type (types ordered by precedence):
 Always iterates over multiple types/instances, e.g:
     - echo: builtin and file
     - zsh: two files on Debian
-
-Exit Status:
-    3 - Invalid options
-    1 - At least one NAME is not found, or any other error
-    0 - otherwise
 
 For example:
     "what if type ls what zsh sh /"
