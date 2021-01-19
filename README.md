@@ -2,7 +2,7 @@
 
 `what` is a Bash function that gets info about a command, like what exactly it is and where. It can help with understanding a command's behaviour and troubleshooting issues. For example, if you run an executable, delete it, then try running it again, Bash may try to run the file that you just deleted (due to pathname hashing), leading to a confusing error message. `what` will tell you about that problem.
 
-Along with it is `symlink-info`, which details complicated symlinks. `what` uses it on symlinked executable files.
+Along with it is `symlink-info`, which details complicated symlinks. `what` uses its function `symlink_info` on symlinked executable files.
 
 As well, there's `indenter`, which just prints indentation. Both `what` and `symlink-info` use it for formatting their output.
 
@@ -128,8 +128,7 @@ Info provided per type (types ordered by precedence):
         - (if hashed file does not exist: warning)
     file
         - path
-            - (if symlink: target, recursively)
-            - (if relative symlink: canonical path)
+            - (if symlink: details from "symlink_info")
         - file type
 
 Always iterates over multiple types/instances, e.g:
@@ -165,6 +164,30 @@ $ symlink-info /usr/bin/awk /bin/sh
 /bin/sh
     symlink: dash
     canonical path: /bin/dash
+```
+
+### Help
+
+```none
+$ ./symlink-info.sh -h
+Usage: symlink-info.sh [-h] [file ...]
+
+Resolve a symlink, recursively and canonically.
+
+Arguments:
+    FILE    Filename of symlink to resolve.
+
+Options:
+    -h      Print this help message and exit.
+
+Info provided per symlink:
+    - target, recursively
+    - (if relative: canonical path)
+
+Exit Status:
+    3 - Invalid options
+    1 - At least one FILE is not found, or any other error
+    0 - otherwise
 ```
 
 ## Installation
