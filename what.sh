@@ -200,7 +200,7 @@ _what_filepath()(
         while IFS= read -r line; do
             _what_indent 2
             printf '%s\n' "$line"
-        done <<< "$(symlink-info "$path" | tail +2)"
+        done <<< "$(symlink-info "$path" | tail -n +2)"
     fi
 
     # Show brief file info.
