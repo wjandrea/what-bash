@@ -198,7 +198,7 @@ _what_filepath()(
     # If the file is a symlink.
     if [[ -L $path ]]; then
         symlink_info "$path" |
-            tail +2 |
+            tail -n +2 |
             indenter_many 2  # symlink_info already adds 1 indentation
     fi
 
