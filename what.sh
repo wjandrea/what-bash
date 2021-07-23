@@ -3,7 +3,8 @@
 #
 # See functions _what_usage and _what_help for more details.
 
-_what_alias()(
+function _what_alias {
+(
     # Get info about an alias.
 
     alias="$1"
@@ -41,8 +42,9 @@ _what_alias()(
         alias -- "$alias"
     fi
 )
+}
 
-_what_alias_match_parse(){
+function _what_alias_match_parse {
     local match="$1"
     local filename
     local line_num
@@ -66,7 +68,8 @@ _what_alias_match_parse(){
     fi
 }
 
-_what_command()(
+function _what_command {
+(
     # Get info about a single command.
     #
     # Runs in a subshell to make it easier to avoid polluting the
@@ -139,8 +142,9 @@ _what_command()(
 
     return $exit
 )
+}
 
-_what_executable_bug(){
+function _what_executable_bug {
     # Give an error about the bug described in "_what_help".
 
     local command
@@ -175,7 +179,8 @@ _what_executable_bug(){
     fi
 }
 
-_what_file()(
+function _what_file {
+(
     # Get info about a command which is a file.
 
     command="$1"
@@ -186,8 +191,10 @@ _what_file()(
 
     _what_filepath "${paths[$path_number]}"
 )
+}
 
-_what_filepath()(
+function _what_filepath {
+(
     # Get info about an executable path.
 
     path="$1"
@@ -208,8 +215,10 @@ _what_filepath()(
     file -bL -- "$path" |
         cut -d, -f1
 )
+}
 
-_what_function()(
+function _what_function {
+(
     # Get info about a function.
 
     function="$1"
@@ -244,8 +253,9 @@ _what_function()(
             indenter_many 3
     fi
 )
+}
 
-_what_hashed(){
+function _what_hashed {
     local command
     local hashpath
 
@@ -273,7 +283,7 @@ _what_hashed(){
     fi
 }
 
-_what_help(){
+function _what_help {
     _what_usage
     echo
     cat <<'EOF'
@@ -298,7 +308,7 @@ Exit Status:
 EOF
 }
 
-_what_info(){
+function _what_info {
     cat <<'EOF'
 Info provided per type (types ordered by precedence):
     alias
@@ -332,11 +342,12 @@ Known issues:
 EOF
 }
 
-_what_usage(){
+function _what_usage {
     printf 'Usage: what [-hi] [-dnt] [name ...]\n'
 }
 
-what()(
+function what {
+(
     # See _what_help and _what_usage.
 
     unset IFS  # Just in case
@@ -410,6 +421,7 @@ what()(
 
     return $exit
 )
+}
 
 # Enable command name completion
 complete -c what
