@@ -20,6 +20,7 @@ Info provided per symlink:
     - (if relative: canonical path)
 
 Exit Status:
+    4 - Missing dependency ("indenter")
     3 - Invalid options
     1 - At least one FILE is not found, or any other error
     0 - otherwise
@@ -31,15 +32,43 @@ function _symlink_info_usage {
 }
 
 function symlink_info { (
-    source indenter.sh || exit 1  # Get function "indenter"
+    # See _symlink_info_help and _symlink_info_usage.
+
+    # Defaults
+    exit=0
 
     # Basename of caller, for error messages and help
     basename=$(basename -- "$0")
     # Name of the main function, for error messages.
     funcname="${FUNCNAME[0]}"
 
-    # Defaults
-    exit=0
+    # Check dependencies
+    # Files to source from if needed
+    declare -A imports=(  # Format: [command_name]=filename_in_bundle
+        [indenter]=indenter.sh
+    )
+    here=${BASH_SOURCE[0]%/*}  # Script location - may be relative
+    # shellcheck disable=2043  # Loop runs only once by design
+    for dependency in indenter; do
+        # Check if command exists
+        if ! type -- "$dependency" &> /dev/null; then
+            # Try sourcing
+            source_filename=${imports[$dependency]}
+            source_path="$here/$source_filename"
+            # shellcheck source=./indenter.sh
+            if ! source "$source_path"; then
+                printf >&2 '%s: %s: Missing dependency: %s\n' \
+                    "$basename" \
+                    "$funcname" \
+                    "$dependency"
+                printf >&2 '%s: %s: Tried sourcing but failed: %s\n' \
+                    "$basename" \
+                    "$funcname" \
+                    "$source_path"
+                exit 4
+            fi
+        fi
+    done
 
     OPTIND=1
     while getopts :h OPT; do

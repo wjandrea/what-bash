@@ -292,6 +292,7 @@ Options:
     -t      Print only types, similar to "type -at".
 
 Exit Status:
+    4 - Missing dependency ("indenter", "indenter_many", or "symlink_info")
     3 - Invalid options
     1 - At least one NAME is not found, or any other error
     0 - otherwise
@@ -341,11 +342,6 @@ function what { (
 
     unset IFS  # Just in case
 
-    # Get functions "indenter" and "indenter_many"
-    source indenter.sh || return 1
-    # Get functions "symlink_info"
-    source symlink-info.sh || return 1
-
     # Defaults
     exit=0
 
@@ -353,6 +349,35 @@ function what { (
     basename=$(basename -- "$0")
     # Name of the main function, for error messages.
     funcname="${FUNCNAME[0]}"
+
+    # Check dependencies
+    # Files to source from if needed
+    declare -A imports=(  # Format: [command_name]=filename_in_bundle
+        [indenter]=indenter.sh
+        [indenter_many]=indenter.sh
+        [symlink_info]=symlink-info.sh
+    )
+    here=${BASH_SOURCE[0]%/*}  # Script location - may be relative
+    for dependency in indenter indenter_many symlink_info; do
+        # Check if command exists
+        if ! type -- "$dependency" &> /dev/null; then
+            # Try sourcing
+            source_filename=${imports[$dependency]}
+            source_path="$here/$source_filename"
+            # shellcheck disable=SC1090  # Non-constant source, can't fix
+            if ! source "$source_path"; then
+                printf >&2 '%s: %s: Missing dependency: %s\n' \
+                    "$basename" \
+                    "$funcname" \
+                    "$dependency"
+                printf >&2 '%s: %s: Tried sourcing but failed: %s\n' \
+                    "$basename" \
+                    "$funcname" \
+                    "$source_path"
+                exit 4
+            fi
+        fi
+    done
 
     OPTIND=1
     while getopts :dhint OPT; do
