@@ -212,7 +212,7 @@ If you want command name completions, run `complete -c what`, which is included 
 
 ## Development
 
-If you're editing `what.sh`, don't forget to source it before running it again, e.g. `source what.sh; what ...`
+If you're editing `what.sh`, don't forget to source it before running it again, e.g. `source ./what.sh; what ...`
 
 ## Roadmap
 
