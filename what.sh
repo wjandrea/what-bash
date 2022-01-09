@@ -1,9 +1,9 @@
 #!/bin/bash
 # Get info about a given command, like a more thorough 'type'.
 #
-# See functions _what_usage and _what_help for more details.
+# See functions _What_usage and _What_help for more details.
 
-function _what_alias { (
+function _What_alias { (
     # Get info about an alias.
 
     alias="$1"
@@ -28,10 +28,10 @@ function _what_alias { (
     # "while" loop accounts for multiple.
     if [[ $matches ]]; then
         printf '%s\n' "$matches" | while read -r match; do
-            _what_alias_match_parse "$match"
+            _What_alias_match_parse "$match"
         done
     else
-        _what_alias_match_parse
+        _What_alias_match_parse
     fi
 
     if [[ $print_definition == true ]]; then
@@ -42,7 +42,7 @@ function _what_alias { (
     fi
 ) }
 
-function _what_alias_match_parse {
+function _What_alias_match_parse {
     local match="$1"
     local filename
     local line_num
@@ -66,7 +66,7 @@ function _what_alias_match_parse {
     fi
 }
 
-function _what_command { (
+function _What_command { (
     # Get info about a single command.
     #
     # Runs in a subshell to make it easier to avoid polluting the
@@ -75,7 +75,7 @@ function _what_command { (
     command="$1"
     exit=0
 
-    _what_executable_bug "$command" || return 1
+    _What_executable_bug "$command" || return 1
 
     # Check command's status.
     if type -ta -- "$command" &> /dev/null; then
@@ -95,7 +95,7 @@ function _what_command { (
 
     printf '%s\n' "$command"
 
-    _what_hashed "$command"
+    _What_hashed "$command"
 
     # Iterate over multiple types/instances of the command.
     for type in $(type -at -- "$command"); do
@@ -109,18 +109,18 @@ function _what_command { (
         # Print command info.
         case $type in
         alias)
-            _what_alias "$command" ||
+            _What_alias "$command" ||
                 exit=1
             ;;
         builtin)
             ;;
         file)
             # Iterate over each file using bash math.
-            _what_file "$command" "$((file_count++))" ||
+            _What_file "$command" "$((file_count++))" ||
                 exit=1
             ;;
         function)
-            _what_function "$command" ||
+            _What_function "$command" ||
                 exit=1
             ;;
         keyword)
@@ -140,8 +140,8 @@ function _what_command { (
     return $exit
 ) }
 
-function _what_executable_bug {
-    # Give an error about the bug described in "_what_help".
+function _What_executable_bug {
+    # Give an error about the bug described in "_What_help".
 
     local command
     local path
@@ -175,7 +175,7 @@ function _what_executable_bug {
     fi
 }
 
-function _what_file { (
+function _What_file { (
     # Get info about a command which is a file.
 
     command="$1"
@@ -184,10 +184,10 @@ function _what_file { (
     # Get command paths
     readarray -t paths <<< "$(type -pa -- "$command")"
 
-    _what_filepath "${paths[$path_number]}"
+    _What_filepath "${paths[$path_number]}"
 ) }
 
-function _what_filepath { (
+function _What_filepath { (
     # Get info about an executable path.
 
     path="$1"
@@ -209,7 +209,7 @@ function _what_filepath { (
         cut -d, -f1
 ) }
 
-function _what_function { (
+function _What_function { (
     # Get info about a function.
 
     function="$1"
@@ -245,7 +245,7 @@ function _what_function { (
     fi
 ) }
 
-function _what_hashed {
+function _What_hashed {
     local command
     local hashpath
 
@@ -273,8 +273,8 @@ function _what_hashed {
     fi
 }
 
-function _what_help {
-    _what_usage
+function _What_help {
+    _What_usage
     echo
     cat <<'EOF'
 Give information about Bash command names, like a more thorough "type".
@@ -299,7 +299,7 @@ Exit Status:
 EOF
 }
 
-function _what_info {
+function _What_info {
     cat <<'EOF'
 Info provided per type (types ordered by precedence):
     alias
@@ -333,12 +333,12 @@ Known issues:
 EOF
 }
 
-function _what_usage {
+function _What_usage {
     printf 'Usage: what [-hi] [-dnt] [name ...]\n'
 }
 
 function what { (
-    # See _what_help and _what_usage.
+    # See _What_help and _What_usage.
 
     unset IFS  # Just in case
 
@@ -386,11 +386,11 @@ function what { (
             print_definition=true
             ;;
         h)
-            _what_help
+            _What_help
             exit 0
             ;;
         i)
-            _what_info
+            _What_info
             exit 0
             ;;
         n)
@@ -411,7 +411,7 @@ function what { (
                 "$basename" \
                 "$funcname" \
                 "$OPTARG"
-            _what_usage >&2
+            _What_usage >&2
             exit 3
             ;;
         esac
@@ -423,12 +423,12 @@ function what { (
         while read -r line; do
             [[ -z $line ]] && continue  # Skip blank lines
 
-            _what_command "$line" ||
+            _What_command "$line" ||
                 exit=1
         done
     else
         for arg; do
-            _what_command "$arg" ||
+            _What_command "$arg" ||
                 exit=1
         done
     fi

@@ -1,10 +1,10 @@
 #!/bin/bash
 # Resolve a symlink, recursively and canonically.
 #
-# See functions _symlink_info_usage and _symlink_info_help for more details.
+# See functions _Symlink_Info_usage and _Symlink_Info_help for more details.
 
-function _symlink_info_help {
-    _symlink_info_usage
+function _Symlink_Info_help {
+    _Symlink_Info_usage
     echo
     cat <<'EOF'
 Resolve a symlink, recursively and canonically.
@@ -27,12 +27,12 @@ Exit Status:
 EOF
 }
 
-function _symlink_info_usage {
+function _Symlink_Info_usage {
     printf 'Usage: %s [-h] [file ...]\n' "$basename"
 }
 
 function symlink_info { (
-    # See _symlink_info_help and _symlink_info_usage.
+    # See _Symlink_Info_help and _Symlink_Info_usage.
 
     # Defaults
     exit=0
@@ -74,7 +74,7 @@ function symlink_info { (
     while getopts :h OPT; do
         case $OPT in
         h)
-            _symlink_info_help
+            _Symlink_Info_help
             exit 0
             ;;
         *)
@@ -82,7 +82,7 @@ function symlink_info { (
                 "$basename" \
                 "$funcname" \
                 "$OPTARG"
-            _symlink_info_usage >&2
+            _Symlink_Info_usage >&2
             exit 3
             ;;
         esac
