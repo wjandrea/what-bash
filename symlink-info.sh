@@ -102,7 +102,7 @@ function symlink_info { (
     done
 
     exit $exit
-); }
+) }
 
 # End sourced section
 return 2>/dev/null

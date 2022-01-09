@@ -3,8 +3,7 @@
 #
 # See functions _what_usage and _what_help for more details.
 
-function _what_alias {
-(
+function _what_alias { (
     # Get info about an alias.
 
     alias="$1"
@@ -41,8 +40,7 @@ function _what_alias {
         printf "definition: "
         alias -- "$alias"
     fi
-)
-}
+) }
 
 function _what_alias_match_parse {
     local match="$1"
@@ -68,8 +66,7 @@ function _what_alias_match_parse {
     fi
 }
 
-function _what_command {
-(
+function _what_command { (
     # Get info about a single command.
     #
     # Runs in a subshell to make it easier to avoid polluting the
@@ -141,8 +138,7 @@ function _what_command {
     done
 
     return $exit
-)
-}
+) }
 
 function _what_executable_bug {
     # Give an error about the bug described in "_what_help".
@@ -179,8 +175,7 @@ function _what_executable_bug {
     fi
 }
 
-function _what_file {
-(
+function _what_file { (
     # Get info about a command which is a file.
 
     command="$1"
@@ -190,11 +185,9 @@ function _what_file {
     readarray -t paths <<< "$(type -pa -- "$command")"
 
     _what_filepath "${paths[$path_number]}"
-)
-}
+) }
 
-function _what_filepath {
-(
+function _what_filepath { (
     # Get info about an executable path.
 
     path="$1"
@@ -214,11 +207,9 @@ function _what_filepath {
     printf 'file type: '
     file -bL -- "$path" |
         cut -d, -f1
-)
-}
+) }
 
-function _what_function {
-(
+function _what_function { (
     # Get info about a function.
 
     function="$1"
@@ -252,8 +243,7 @@ function _what_function {
         declare -f -- "$function" |
             indenter_many 3
     fi
-)
-}
+) }
 
 function _what_hashed {
     local command
@@ -346,8 +336,7 @@ function _what_usage {
     printf 'Usage: what [-hi] [-dnt] [name ...]\n'
 }
 
-function what {
-(
+function what { (
     # See _what_help and _what_usage.
 
     unset IFS  # Just in case
@@ -420,8 +409,7 @@ function what {
     fi
 
     return $exit
-)
-}
+) }
 
 # Enable command name completion
 complete -c what
