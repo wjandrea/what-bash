@@ -442,7 +442,10 @@ complete -c what
 # End sourced section
 return 2>/dev/null
 
-printf >&2 \
-    '%s: Warning: This script is intended to be sourced from Bash, to provide the function "what".\n' \
-    "$(basename -- "$0")"
-what "$@"
+# shellcheck disable=SC2317
+{
+    printf >&2 \
+        '%s: Warning: This script is intended to be sourced from Bash, to provide the function "what".\n' \
+        "$(basename -- "$0")"
+    what "$@"
+}

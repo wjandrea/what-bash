@@ -136,4 +136,5 @@ function symlink_info { (
 # End sourced section
 return 2>/dev/null
 
+# shellcheck disable=SC2317
 symlink_info "$@"

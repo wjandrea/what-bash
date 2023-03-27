@@ -26,4 +26,5 @@ function indenter_many {
 # End sourced section
 return 2>/dev/null
 
+# shellcheck disable=SC2317
 indenter_many "$@"
