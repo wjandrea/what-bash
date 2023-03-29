@@ -439,7 +439,7 @@ function what { (
     return $exit
 ) }
 
-# Enable command name completion
+# Enable command name completion (interactive usage).
 complete -c what
 
 # End sourced section
