@@ -55,7 +55,7 @@ function symlink_info { (
             # Try sourcing
             source_filename=${imports[$dependency]}
             source_path="$here/$source_filename"
-            # shellcheck source=./indenter.sh
+            # shellcheck disable=SC1090  # Non-constant source is easier
             if ! source "$source_path"; then
                 printf >&2 '%s: %s: Missing dependency: %s\n' \
                     "$basename" \
