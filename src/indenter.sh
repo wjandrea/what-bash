@@ -26,5 +26,5 @@ function indenter_many {
 # End sourced section
 return 2>/dev/null
 
-# shellcheck disable=SC2317
+# shellcheck disable=SC2317  # Not unreachable if run as script
 indenter_many "$@"

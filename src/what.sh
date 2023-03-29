@@ -469,7 +469,7 @@ complete -c what
 # End sourced section
 return 2>/dev/null
 
-# shellcheck disable=SC2317
+# shellcheck disable=SC2317  # Not unreachable if run as script
 {
     printf >&2 \
         '%s: Warning: This script is intended to be sourced from Bash, to provide the function "what".\n' \
