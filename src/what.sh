@@ -304,7 +304,7 @@ function _What_info {
     cat <<'EOF'
 Info provided per type (types ordered by precedence):
     alias
-        - possible source file and line number
+        - possible source file(s) and line number(s)
             - (with option "-d": definition in file)
         - (with option "-d": current definition)
     keyword
@@ -316,7 +316,7 @@ Info provided per type (types ordered by precedence):
     hashed file (though not a type per se)
         - path
         - (if hashed file does not exist: warning)
-    file
+    file(s)
         - path
             - (if symlink: details from "symlink_info")
         - file type
