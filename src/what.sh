@@ -420,9 +420,10 @@ function what { (
             ;;
         n)
             if ! [[ -f $command_not_found_handler ]]; then
-                printf >&2 '%s: %s: Missing required program for "-n": %s\n' \
+                printf >&2 '%s: %s: Missing required program for "%s": %s\n' \
                     "$basename" \
                     "$funcname" \
+                    "-$OPT" \
                     "$command_not_found_handler"
                 exit 3
             fi
