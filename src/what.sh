@@ -410,10 +410,10 @@ function what { (
             print_type_only=true
             ;;
         *)
-            printf >&2 '%s: %s: Invalid option: -%s\n' \
+            printf >&2 '%s: %s: Invalid option: %s\n' \
                 "$basename" \
                 "$funcname" \
-                "$OPTARG"
+                "-$OPTARG"
             _What_usage >&2
             exit 3
             ;;
