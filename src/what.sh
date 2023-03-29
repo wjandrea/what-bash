@@ -1,7 +1,8 @@
 #!/bin/bash
 # Get info about a given command, like a more thorough 'type'.
 #
-# See functions _What_usage and _What_help for more details.
+# For more details, see functions _What_usage and _What_help
+# as well as _What_info.
 
 function _What_alias { (
     # Get info about an alias.
@@ -141,7 +142,7 @@ function _What_command { (
 ) }
 
 function _What_executable_bug {
-    # Give an error about the bug described in "_What_help".
+    # Give an error about the issue described in "_What_info".
 
     local command
     local path
@@ -338,7 +339,7 @@ function _What_usage {
 }
 
 function what { (
-    # See _What_help and _What_usage.
+    # For details, see _What_help and _What_usage, as well as _What_info.
 
     unset IFS  # Just in case
 
