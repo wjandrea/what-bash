@@ -36,7 +36,12 @@ what
     function
         source: /home/wja/.local/lib/bash/what.sh:348
         export: no
-$ what awk sh ls  # A bit more complex
+```
+
+A bit more complex:
+
+```none
+$ what awk sh ls
 awk
     file
         path: /usr/bin/awk
@@ -78,7 +83,7 @@ ll
         definition: alias ll='ls -alF'
 ```
 
-Note that the source of a function can be traced, but not an alias. `what` basically guesses at alias sources. Specifically, it tries to find the source in the most common files, using a regex.
+Note that the source of a function can be traced, but not an alias. `what` basically guesses at alias sources. Specifically, it tries to find the alias name in the most common files, using a regex. It doesn't look at the definition, for example:
 
 ```none
 $ alias ll='do_something_else'
@@ -92,8 +97,10 @@ ll
 
 #### Show a problem with a hashed path
 
+If we create a bad hash:
+
 ```none
-$ hash -p /nonexistent FAKE_COMMAND  # Create a bad hash
+$ hash -p /nonexistent FAKE_COMMAND
 $ what FAKE_COMMAND
 bash: what: FAKE_COMMAND: File does not exist: /nonexistent
 ```
@@ -122,6 +129,9 @@ Exit Status:
     3 - Invalid options
     1 - At least one NAME is not found, or any other error
     0 - otherwise
+```
+
+```none
 $ what -i
 Info provided per type (types ordered by precedence):
     alias
