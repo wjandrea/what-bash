@@ -335,7 +335,9 @@ EOF
 }
 
 function _What_usage {
-    printf 'Usage: what [-hi] [-dnt] [name ...]\n'
+    cat <<'EOF'
+Usage: what [-hi] [-dnt] [name ...]
+EOF
 }
 
 function what { (
