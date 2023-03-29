@@ -261,26 +261,28 @@ function _What_hashed {
 
     command="$1"
 
-    if hashpath="$(hash -t -- "$command" 2>/dev/null)"; then
-        indenter 1
-        printf 'hashed\n'
-
-        if ! [[ -f $hashpath ]]; then
-            printf >&2 '%s: %s: %s: Hashed file does not exist: %s\n' \
-                "$basename" \
-                "$funcname" \
-                "$command" \
-                "$hashpath"
-            exit=1
-        fi
-
-        if [[ $print_type_only == true ]]; then
-            return
-        fi
-
-        indenter 2
-        printf 'path: %s\n' "$hashpath"
+    if ! hashpath="$(hash -t -- "$command" 2>/dev/null)"; then
+        return
     fi
+
+    indenter 1
+    printf 'hashed\n'
+
+    if ! [[ -f $hashpath ]]; then
+        printf >&2 '%s: %s: %s: Hashed file does not exist: %s\n' \
+            "$basename" \
+            "$funcname" \
+            "$command" \
+            "$hashpath"
+        exit=1
+    fi
+
+    if [[ $print_type_only == true ]]; then
+        return
+    fi
+
+    indenter 2
+    printf 'path: %s\n' "$hashpath"
 }
 
 function _What_help {
