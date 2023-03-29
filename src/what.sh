@@ -90,7 +90,7 @@ function _What_command { (
         return 1
     else
         # Command not found.
-        printf >&2 '%s: %s: %s: Not found\n' "$basename" "$funcname" "$command"
+        printf >&2 '%s: %s: Not found: %s\n' "$basename" "$funcname" "$command"
         return 1
     fi
 
