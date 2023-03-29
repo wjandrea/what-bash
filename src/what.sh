@@ -75,6 +75,8 @@ function _What_command { (
 
     command="$1"
     exit=0
+    # For printing hash in the right place
+    hash_encountered=false
 
     _What_executable_bug "$command" || return 1
 
@@ -96,10 +98,13 @@ function _What_command { (
 
     printf '%s\n' "$command"
 
-    _What_hashed "$command"
-
     # Iterate over multiple types/instances of the command.
     for type in $(type -at -- "$command"); do
+        if [[ $type == file && $hash_encountered == false ]]; then
+            _What_hashed "$command"
+            hash_encountered=true
+        fi
+
         indenter 1
         printf '%s\n' "$type"
 
@@ -137,6 +142,10 @@ function _What_command { (
             ;;
         esac
     done
+
+    if [[ $hash_encountered == false ]]; then
+        _What_hashed "$command"
+    fi
 
     return $exit
 ) }
