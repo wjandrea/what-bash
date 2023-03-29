@@ -32,7 +32,7 @@ function _What_alias { (
             _What_alias_match_parse "$match"
         done
     else
-        _What_alias_match_parse
+        _What_alias_match_parse ''
     fi
 
     if [[ $print_definition == true ]]; then
