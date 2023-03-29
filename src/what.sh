@@ -265,13 +265,6 @@ function _What_hashed {
         indenter 1
         printf 'hashed\n'
 
-        if [[ $print_type_only == true ]]; then
-            return
-        fi
-
-        indenter 2
-        printf 'path: %s\n' "$hashpath"
-
         if ! [[ -f $hashpath ]]; then
             printf >&2 '%s: %s: %s: Hashed file does not exist: %s\n' \
                 "$basename" \
@@ -280,6 +273,13 @@ function _What_hashed {
                 "$hashpath"
             exit=1
         fi
+
+        if [[ $print_type_only == true ]]; then
+            return
+        fi
+
+        indenter 2
+        printf 'path: %s\n' "$hashpath"
     fi
 }
 
@@ -323,8 +323,8 @@ Info provided per type (types ordered by precedence):
         - (with option "-d": definition)
     builtin
     hashed file (though not a type per se)
-        - path
         - (if hashed file does not exist: warning)
+        - path
     file(s)
         - path
             - (if symlink: details from "symlink_info")
