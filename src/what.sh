@@ -88,7 +88,7 @@ function _What_command { (
         # Command is not availble, but is hashed.
         true
     elif [[ $more_info_command_not_found == true ]]; then
-        /usr/lib/command-not-found "$command"
+        "$command_not_found_handler" "$command"
         return 1
     else
         # Command not found.
@@ -375,6 +375,8 @@ function what { (
     # Name of the main function, for error messages.
     funcname="${FUNCNAME[0]}"
 
+    command_not_found_handler=/usr/lib/command-not-found
+
     # Check dependencies
     # Files to source from if needed
     declare -A imports=(  # Format: [command_name]=filename_in_bundle
@@ -419,11 +421,11 @@ function what { (
             exit 0
             ;;
         n)
-            if ! [[ -f /usr/lib/command-not-found ]]; then
+            if ! [[ -f $command_not_found_handler ]]; then
                 printf >&2 '%s: %s: Missing required program for "-n": %s\n' \
                     "$basename" \
                     "$funcname" \
-                    "/usr/lib/command-not-found"
+                    "$command_not_found_handler"
                 exit 3
             fi
             more_info_command_not_found=true
