@@ -341,7 +341,16 @@ For example:
     - Covers keyword, builtin, alias/file, function, multiple files/absolute symlinks, relative symlink (on Debian/Ubuntu), and non-command.
 
 Known issues:
-    - Some versions of Bash have different output between "type COMMAND" and "type -a COMMAND" if COMMAND is a file but is not executable. "what" will error if affected.
+    - Bash may have different output between "type COMMAND" and
+      "type -a COMMAND" if COMMAND is a file but is not executable.
+      That includes:
+        - If the user doesn't have execute permissions to the file
+        - If the file is a directory
+        - If the file does not exist, as a hashed path
+      Some of this behaviour depends on the version of Bash.
+
+      Since "what" relies on the output of "type" to make sense of the
+      environment, it will print an error or warning if affected.
 EOF
 }
 
