@@ -44,19 +44,17 @@ function symlink_info { (
 
     # Check dependencies
     # Files to source from if needed
-    declare -A imports=(  # Format: [command_name]=filename_in_bundle
+    declare -A imports=(  # Format: [command_name]=filename
         [indenter]=indenter.sh
     )
-    here=${BASH_SOURCE[0]%/*}  # Script location - may be relative
     # shellcheck disable=2043  # Loop runs only once by design
     for dependency in indenter; do
         # Check if command exists
         if ! type -- "$dependency" &> /dev/null; then
             # Try sourcing
             source_filename=${imports[$dependency]}
-            source_path="$here/$source_filename"
-            # shellcheck disable=SC1090  # Non-constant source is easier
-            if ! source "$source_path"; then
+            # shellcheck disable=SC1090  # Non-constant source, can't fix
+            if ! source "$source_filename"; then
                 printf >&2 '%s: %s: Missing dependency: %s\n' \
                     "$basename" \
                     "$funcname" \
@@ -64,7 +62,7 @@ function symlink_info { (
                 printf >&2 '%s: %s: Tried sourcing but failed: %s\n' \
                     "$basename" \
                     "$funcname" \
-                    "$source_path"
+                    "$source_filename"
                 exit 4
             fi
         fi
