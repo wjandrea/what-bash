@@ -338,7 +338,9 @@ Always iterates over multiple types/instances, e.g:
 
 For example:
     "what if type ls what zsh sh /"
-    - Covers keyword, builtin, alias/file, function, multiple files/absolute symlinks, relative symlink (on Debian/Ubuntu), and non-command.
+    - Covers keyword, builtin, alias/file, function, multiple
+      files/absolute symlinks, relative symlink (on Debian/Ubuntu),
+      and non-command.
 
 Known issues:
     - Bash may have different output between "type COMMAND" and
