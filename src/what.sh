@@ -312,30 +312,6 @@ Exit Status:
 EOF
 }
 
-function _What_indent {
-    # Indent by the given number of indent levels.
-
-    local end="${1-1}"
-    local i
-    local indent_string="${2-    }"
-
-    for ((i=1; i<="$end"; i++)); do
-        printf '%s' "$indent_string"
-    done
-}
-
-function _What_indent_many {
-    # Indent each line from stdin.
-    # Wraps "_What_indent".
-
-    local line
-
-    while IFS= read -r line; do
-        _What_indent "$@"
-        printf '%s\n' "$line"
-    done
-}
-
 function _What_info {
     cat <<'EOF'
 Info provided per type (types ordered by precedence):
@@ -379,6 +355,30 @@ Known issues:
       Since "what" relies on the output of "type" to make sense of the
       environment, it will print an error or warning if affected.
 EOF
+}
+
+function _What_indent {
+    # Indent by the given number of indent levels.
+
+    local end="${1-1}"
+    local i
+    local indent_string="${2-    }"
+
+    for ((i=1; i<="$end"; i++)); do
+        printf '%s' "$indent_string"
+    done
+}
+
+function _What_indent_many {
+    # Indent each line from stdin.
+    # Wraps "_What_indent".
+
+    local line
+
+    while IFS= read -r line; do
+        _What_indent "$@"
+        printf '%s\n' "$line"
+    done
 }
 
 function _What_usage {
