@@ -47,6 +47,7 @@ function _What_alias_match_parse {
     local match="$1"
     local filename
     local line_num
+    local line
 
     if [[ -z $match ]]; then
         indenter 2
