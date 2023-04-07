@@ -6,6 +6,7 @@ function indenter {
     # Indent by the given number of indent levels.
 
     local end="${1-1}"
+    local i
     local indent_string="${2-    }"
 
     for ((i=1; i<="$end"; i++)); do
@@ -16,6 +17,8 @@ function indenter {
 function indenter_many {
     # Indent each line from stdin.
     # Wraps "indenter".
+
+    local line
 
     while IFS= read -r line; do
         indenter "$@"
