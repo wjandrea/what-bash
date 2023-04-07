@@ -64,6 +64,8 @@ ls
 
 #### Show definitions of aliases and functions
 
+Use `what -d`:
+
 ```none
 $ function foo { bar; }
 $ what -d foo ll
