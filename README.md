@@ -220,6 +220,16 @@ Exit Status:
 
 ## Installation
 
+Put `symlink-info.sh` in your `PATH` as `symlink-info`. Source `what.sh`.
+
+The details are up to you. For example, you might want to source `what.sh` from your bashrc so that you always have `what` available.
+
+For command name completion:
+
+```bash
+complete -c what
+```
+
 ### In a pinch
 
 `cd` into the `src` directory, then:
@@ -231,18 +241,6 @@ hash -p "$PWD/symlink-info.sh" symlink-info &&
 ```
 
 (Using `$PWD` with `what.sh` so that there's a record of where `what` came from.)
-
-### Normally
-
-Put `symlink-info.sh` in your `PATH` as `symlink-info`. Source `what.sh`.
-
-The details are up to you. For example, you might want to source `what.sh` from your bashrc so that you always have `what` available.
-
-For command name completion:
-
-```bash
-complete -c what
-```
 
 ### Requirements
 
