@@ -222,7 +222,7 @@ Exit Status:
 
 Put `symlink-info.sh` in your `PATH` as `symlink-info`. Source `what.sh`.
 
-The details are up to you. For example, you might want to source `what.sh` from your bashrc so that you always have `what` available.
+Everything else is your choice. For example, you might want to source `what.sh` from your bashrc so that you always have `what` available.
 
 For command name completion:
 
