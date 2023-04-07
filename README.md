@@ -2,9 +2,7 @@
 
 `what` is a Bash function that gets info about a command, like what exactly it is and where. It can help with understanding a command's behaviour and troubleshooting issues. For example, if you run an executable, delete it, then try running it again, Bash may try to run the file that you just deleted (due to pathname hashing), leading to a confusing error message. `what` will tell you about that problem.
 
-Along with it is `symlink-info`, which details complicated symlinks. `what` uses its function `symlink_info` on symlinked executable files.
-
-As well, there's `indenter`, which just prints indentation. Both `what` and `symlink-info` use it for formatting their output.
+Along with it is `symlink-info`, which details complicated symlinks. `what` uses it on symlinked executable files.
 
 ## `what`
 
@@ -128,6 +126,7 @@ Options:
     -t      Print only types, similar to "type -at".
 
 Exit Status:
+    4 - Missing dependency ("symlink-info" or optionally the "-n" handler)
     3 - Invalid options
     1 - At least one NAME is not found, or any other error
     0 - otherwise
@@ -137,7 +136,7 @@ Exit Status:
 $ what -i
 Info provided per type (types ordered by precedence):
     alias
-        - possible source file and line number
+        - possible source file(s) and line number(s)
             - (with option "-d": definition in file)
         - (with option "-d": current definition)
     keyword
@@ -147,11 +146,11 @@ Info provided per type (types ordered by precedence):
         - (with option "-d": definition)
     builtin
     hashed file (though not a type per se)
-        - path
         - (if hashed file does not exist: warning)
-    file
         - path
-            - (if symlink: details from "symlink_info")
+    file(s)
+        - path
+            - (if symlink: details from "symlink-info")
         - file type
 
 Always iterates over multiple types/instances, e.g:
@@ -160,10 +159,21 @@ Always iterates over multiple types/instances, e.g:
 
 For example:
     "what if type ls what zsh sh /"
-    - Covers keyword, builtin, alias/file, function, multiple files/absolute symlinks, relative symlink (on Debian/Ubuntu), and non-command.
+    - Covers keyword, builtin, alias/file, function, multiple
+      files/absolute symlinks, relative symlink (on Debian/Ubuntu),
+      and non-command.
 
 Known issues:
-    - Some versions of Bash have different output between "type COMMAND" and "type -a COMMAND" if COMMAND is a file but is not executable. "what" will error if affected.
+    - Bash may have different output between "type COMMAND" and
+      "type -a COMMAND" if COMMAND is a file but is not executable.
+      That includes:
+        - If the user doesn't have execute permissions to the file
+        - If the file is a directory
+        - If the file does not exist, as a hashed path
+      Some of this behaviour depends on the version of Bash.
+
+      Since "what" relies on the output of "type" to make sense of the
+      environment, it will print an error or warning if affected.
 ```
 
 ## `symlink-info`
@@ -187,8 +197,8 @@ $ symlink-info /usr/bin/awk /bin/sh
 ### Help
 
 ```none
-$ ./symlink-info.sh -h
-Usage: symlink-info.sh [-h] [file ...]
+$ symlink-info -h
+Usage: symlink-info [-h] [file ...]
 
 Resolve a symlink, recursively and canonically.
 
@@ -210,11 +220,29 @@ Exit Status:
 
 ## Installation
 
-Put all three scripts in the `$PATH` so that they can `source` each other. That could be as simple as `PATH+=":$PWD/src"` from this project directory.
+### In a pinch
 
-Everything else is your choice. For example, you might want to put `source what.sh` in your bashrc so that you always have `what` available. You might also want to put `symlink-info.sh` and `indenter.sh` in your `$PATH` as `symlink-info` and `indenter` so you can call them like that from other tools.
+`cd` into the `src` directory, then:
 
-Command name completion is included in `what.sh` (`complete -c what`).
+```bash
+hash -p "$PWD/symlink-info.sh" symlink-info &&
+    source "$PWD/what.sh" &&
+    complete -c what
+```
+
+(Using `$PWD` with `what.sh` so that there's a record of where `what` came from.)
+
+### Normally
+
+Put `symlink-info.sh` in your `PATH` as `symlink-info`. Source `what.sh`.
+
+The details are up to you. For example, you might want to source `what.sh` from your bashrc so that you always have `what` available.
+
+For command name completion:
+
+```bash
+complete -c what
+```
 
 ### Requirements
 

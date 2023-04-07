@@ -37,7 +37,7 @@ function _What_alias { (
 
     if [[ $print_definition == true ]]; then
         # Print the *current* definition.
-        indenter 2
+        _What_indent 2
         printf "definition: "
         alias -- "$alias"
     fi
@@ -50,19 +50,19 @@ function _What_alias_match_parse {
     local line
 
     if [[ -z $match ]]; then
-        indenter 2
+        _What_indent 2
         printf 'possible source: %s\n' '(not found)'
         return
     fi
 
     IFS=: read -r filename line_num line <<< "$match"
 
-    indenter 2
+    _What_indent 2
     printf 'possible source: %s:%s\n' "$filename" "$line_num"
 
     if [[ $print_definition == true ]]; then
         # Print the definition *from the file*.
-        indenter 3
+        _What_indent 3
         printf "definition: "
         sed 's/^ *//; s/ *$//' <<< "$line"  # Strip surrounding whitespace
     fi
@@ -106,7 +106,7 @@ function _What_command { (
             hash_encountered=true
         fi
 
-        indenter 1
+        _What_indent 1
         printf '%s\n' "$type"
 
         if [[ $print_type_only == true ]]; then
@@ -203,18 +203,18 @@ function _What_filepath { (
 
     path="$1"
 
-    indenter 2
+    _What_indent 2
     printf 'path: %s\n' "$path"
 
     # If the file is a symlink.
     if [[ -L $path ]]; then
-        symlink_info "$path" |
+        symlink-info "$path" |
             tail -n +2 |
-            indenter_many 2  # symlink_info already adds 1 indentation
+            _What_indent_many 2  # symlink-info already adds 1 indentation
     fi
 
     # Show brief file info.
-    indenter 2
+    _What_indent 2
     printf 'file type: '
     file -bL -- "$path" |
         cut -d, -f1
@@ -235,11 +235,11 @@ function _What_function { (
         )"
 
     # Print.
-    indenter 2
+    _What_indent 2
     printf 'source: %s:%s\n' "$filename" "$line_num"
 
     # Print export status.
-    indenter 2
+    _What_indent 2
     printf 'export: '
     if [[ $attrs == *x* ]]; then
         echo yes
@@ -249,10 +249,10 @@ function _What_function { (
 
     if [[ $print_definition == true ]]; then
         # Print the function definition.
-        indenter 2
+        _What_indent 2
         printf 'definition:\n'
         declare -f -- "$function" |
-            indenter_many 3
+            _What_indent_many 3
     fi
 ) }
 
@@ -266,7 +266,7 @@ function _What_hashed {
         return
     fi
 
-    indenter 1
+    _What_indent 1
     printf 'hashed\n'
 
     if ! [[ -f $hashpath ]]; then
@@ -282,7 +282,7 @@ function _What_hashed {
         return
     fi
 
-    indenter 2
+    _What_indent 2
     printf 'path: %s\n' "$hashpath"
 }
 
@@ -305,11 +305,35 @@ Options:
     -t      Print only types, similar to "type -at".
 
 Exit Status:
-    4 - Missing dependency ("indenter", "indenter_many", or "symlink_info")
+    4 - Missing dependency ("symlink-info" or optionally the "-n" handler)
     3 - Invalid options
     1 - At least one NAME is not found, or any other error
     0 - otherwise
 EOF
+}
+
+function _What_indent {
+    # Indent by the given number of indent levels.
+
+    local end="${1-1}"
+    local i
+    local indent_string="${2-    }"
+
+    for ((i=1; i<="$end"; i++)); do
+        printf '%s' "$indent_string"
+    done
+}
+
+function _What_indent_many {
+    # Indent each line from stdin.
+    # Wraps "_What_indent".
+
+    local line
+
+    while IFS= read -r line; do
+        _What_indent "$@"
+        printf '%s\n' "$line"
+    done
 }
 
 function _What_info {
@@ -330,7 +354,7 @@ Info provided per type (types ordered by precedence):
         - path
     file(s)
         - path
-            - (if symlink: details from "symlink_info")
+            - (if symlink: details from "symlink-info")
         - file type
 
 Always iterates over multiple types/instances, e.g:
@@ -379,29 +403,15 @@ function what { (
     command_not_found_handler=/usr/lib/command-not-found
 
     # Check dependencies
-    # Files to source from if needed
-    declare -A imports=(  # Format: [command_name]=filename
-        [indenter]=indenter.sh
-        [indenter_many]=indenter.sh
-        [symlink_info]=symlink-info.sh
-    )
-    for dependency in indenter indenter_many symlink_info; do
+    # shellcheck disable=SC2043  # Loop only runs once for one dependency
+    for dependency in symlink-info; do
         # Check if command exists
         if ! type -- "$dependency" &> /dev/null; then
-            # Try sourcing
-            source_filename=${imports[$dependency]}
-            # shellcheck disable=SC1090  # Non-constant source, can't fix
-            if ! source "$source_filename"; then
-                printf >&2 '%s: %s: Missing dependency: %s\n' \
-                    "$basename" \
-                    "$funcname" \
-                    "$dependency"
-                printf >&2 '%s: %s: Tried sourcing but failed: %s\n' \
-                    "$basename" \
-                    "$funcname" \
-                    "$source_filename"
-                exit 4
-            fi
+            printf >&2 '%s: %s: Missing dependency: %s\n' \
+                "$basename" \
+                "$funcname" \
+                "$dependency"
+            exit 4
         fi
     done
 
@@ -426,7 +436,7 @@ function what { (
                     "$funcname" \
                     "-$OPT" \
                     "$command_not_found_handler"
-                exit 3
+                exit 4
             fi
             more_info_command_not_found=true
             ;;
@@ -462,9 +472,6 @@ function what { (
 
     return $exit
 ) }
-
-# Enable command name completion (interactive usage).
-complete -c what
 
 # End sourced section
 return 2>/dev/null

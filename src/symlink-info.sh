@@ -1,10 +1,10 @@
 #!/bin/bash
 # Resolve a symlink, recursively and canonically.
 #
-# See functions _Symlink_Info_usage and _Symlink_Info_help for more details.
+# See functions "_usage" and "_help" for more details.
 
-function _Symlink_Info_help {
-    _Symlink_Info_usage
+function _help {
+    _usage
     echo
     cat <<'EOF'
 Resolve a symlink, recursively and canonically.
@@ -20,67 +20,52 @@ Info provided per symlink:
     - (if relative: canonical path)
 
 Exit Status:
-    4 - Missing dependency ("indenter")
     3 - Invalid options
     1 - At least one FILE is not found, or any other error
     0 - otherwise
 EOF
 }
 
-function _Symlink_Info_usage {
-    printf 'Usage: %s [-h] [file ...]\n' "$basename"
+function _indent {
+    # Indent by the given number of indent levels.
+
+    local end="${1-1}"
+    local i
+    local indent_string="${2-    }"
+
+    for ((i=1; i<="$end"; i++)); do
+        printf '%s' "$indent_string"
+    done
 }
 
-function symlink_info { (
-    # See _Symlink_Info_help and _Symlink_Info_usage.
+
+function _usage {
+    cat <<'EOF'
+Usage: symlink-info [-h] [file ...]
+EOF
+}
+
+function symlink_info {
+    # For details, see "_usage" and "_help".
 
     # Defaults
     exit=0
 
-    # Basename of caller, for error messages and help
+    # Basename, for error messages and help
     basename=$(basename -- "$0")
-    # Name of the main function, for error messages.
-    funcname="${FUNCNAME[0]}"
-
-    # Check dependencies
-    # Files to source from if needed
-    declare -A imports=(  # Format: [command_name]=filename
-        [indenter]=indenter.sh
-    )
-    # shellcheck disable=2043  # Loop runs only once by design
-    for dependency in indenter; do
-        # Check if command exists
-        if ! type -- "$dependency" &> /dev/null; then
-            # Try sourcing
-            source_filename=${imports[$dependency]}
-            # shellcheck disable=SC1090  # Non-constant source, can't fix
-            if ! source "$source_filename"; then
-                printf >&2 '%s: %s: Missing dependency: %s\n' \
-                    "$basename" \
-                    "$funcname" \
-                    "$dependency"
-                printf >&2 '%s: %s: Tried sourcing but failed: %s\n' \
-                    "$basename" \
-                    "$funcname" \
-                    "$source_filename"
-                exit 4
-            fi
-        fi
-    done
 
     OPTIND=1
     while getopts :h OPT; do
         case $OPT in
         h)
-            _Symlink_Info_help
+            _help
             exit 0
             ;;
         *)
-            printf >&2 '%s: %s: Invalid option: -%s\n' \
+            printf >&2 '%s: Invalid option: -%s\n' \
                 "$basename" \
-                "$funcname" \
                 "$OPTARG"
-            _Symlink_Info_usage >&2
+            _usage >&2
             exit 3
             ;;
         esac
@@ -96,7 +81,7 @@ function symlink_info { (
         fi
 
         if [[ $problem ]]; then
-            printf >&2 '%s: %s: %s: %s\n' "$basename" "$funcname" "$problem" "$path"
+            printf >&2 '%s: %s: %s\n' "$basename" "$problem" "$path"
             exit=1
             continue
         fi
@@ -107,7 +92,7 @@ function symlink_info { (
             link_deref="$(readlink -- "$path")"
 
             # Print the dereferenced file info.
-            indenter 1
+            _indent 1
             printf 'symlink: %s\n' "$link_deref"
 
             # If deref'd path starts with a slash.
@@ -123,16 +108,12 @@ function symlink_info { (
         # Canonical path
         path_canonical="$(readlink -m -- "$path")"
         if [[ $path_canonical != "$link_deref" ]]; then
-            indenter 1
+            _indent 1
             printf 'canonical path: %s\n' "$path_canonical"
         fi
     done
 
     exit $exit
-) }
+}
 
-# End sourced section
-return 2>/dev/null
-
-# shellcheck disable=SC2317  # Not unreachable if run as script
 symlink_info "$@"
