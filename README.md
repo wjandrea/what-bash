@@ -62,7 +62,7 @@ ls
         file type: ELF 64-bit LSB shared object
 ```
 
-### Show definitions of aliases and functions
+#### Show definitions of aliases and functions
 
 ```none
 $ function foo { bar; }
