@@ -26,6 +26,12 @@ Exit Status:
 EOF
 }
 
+function _usage {
+    cat <<'EOF'
+Usage: symlink-info [-h] [file ...]
+EOF
+}
+
 function _indent {
     # Indent by the given number of indent levels.
 
@@ -38,82 +44,68 @@ function _indent {
     done
 }
 
+basename=$(basename -- "$0")  # For error messages and help
 
-function _usage {
-    cat <<'EOF'
-Usage: symlink-info [-h] [file ...]
-EOF
-}
+# Defaults
+exit=0
 
-function symlink_info {
-    # For details, see "_usage" and "_help".
+OPTIND=1
+while getopts :h OPT; do
+    case $OPT in
+    h)
+        _help
+        exit 0
+        ;;
+    *)
+        printf >&2 '%s: Invalid option: -%s\n' \
+            "$basename" \
+            "$OPTARG"
+        _usage >&2
+        exit 3
+        ;;
+    esac
+done
+shift "$((OPTIND-1))"
 
-    # Defaults
-    exit=0
+for path; do
+    problem=
+    if ! [[ -e $path ]]; then
+        problem='No such file'
+    elif ! [[ -L $path ]]; then
+        problem='Not a symlink'
+    fi
 
-    # Basename, for error messages and help
-    basename=$(basename -- "$0")
+    if [[ $problem ]]; then
+        printf >&2 '%s: %s: %s\n' "$basename" "$problem" "$path"
+        exit=1
+        continue
+    fi
 
-    OPTIND=1
-    while getopts :h OPT; do
-        case $OPT in
-        h)
-            _help
-            exit 0
-            ;;
-        *)
-            printf >&2 '%s: Invalid option: -%s\n' \
-                "$basename" \
-                "$OPTARG"
-            _usage >&2
-            exit 3
-            ;;
-        esac
-    done
-    shift "$((OPTIND-1))"
+    printf '%s\n' "$path"
+    # While loop accounts for multi-level symlinks
+    while [[ -L $path ]]; do
+        link_deref="$(readlink -- "$path")"
 
-    for path; do
-        problem=
-        if ! [[ -e $path ]]; then
-            problem='No such file'
-        elif ! [[ -L $path ]]; then
-            problem='Not a symlink'
-        fi
+        # Print the dereferenced file info.
+        _indent 1
+        printf 'symlink: %s\n' "$link_deref"
 
-        if [[ $problem ]]; then
-            printf >&2 '%s: %s: %s\n' "$basename" "$problem" "$path"
-            exit=1
-            continue
-        fi
-
-        printf '%s\n' "$path"
-        # While loop accounts for multi-level symlinks
-        while [[ -L $path ]]; do
-            link_deref="$(readlink -- "$path")"
-
-            # Print the dereferenced file info.
-            _indent 1
-            printf 'symlink: %s\n' "$link_deref"
-
-            # If deref'd path starts with a slash.
-            if [[ "$link_deref" == /* ]]; then
-                # Link is absolute.
-                path="$link_deref"
-            else
-                # Link is relative, so get absolute path.
-                path="${path%/*}/$link_deref"
-            fi
-        done
-
-        # Canonical path
-        path_canonical="$(readlink -m -- "$path")"
-        if [[ $path_canonical != "$link_deref" ]]; then
-            _indent 1
-            printf 'canonical path: %s\n' "$path_canonical"
+        # If deref'd path starts with a slash.
+        if [[ "$link_deref" == /* ]]; then
+            # Link is absolute.
+            path="$link_deref"
+        else
+            # Link is relative, so get absolute path.
+            path="${path%/*}/$link_deref"
         fi
     done
 
-    exit $exit
-}
+    # Canonical path
+    path_canonical="$(readlink -m -- "$path")"
+    if [[ $path_canonical != "$link_deref" ]]; then
+        _indent 1
+        printf 'canonical path: %s\n' "$path_canonical"
+    fi
+done
 
-symlink_info "$@"
+exit $exit
