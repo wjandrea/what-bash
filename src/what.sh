@@ -1,9 +1,10 @@
 #!/bin/bash
 # Get info about a given command, like a more thorough 'type'.
 #
-# See functions _what_usage and _what_help for more details.
+# For more details, see functions _What_usage and _What_help
+# as well as _What_info.
 
-_what_alias()(
+function _What_alias { (
     # Get info about an alias.
 
     alias="$1"
@@ -27,46 +28,47 @@ _what_alias()(
     # Print matches.
     # "while" loop accounts for multiple.
     if [[ $matches ]]; then
-        while read -r match; do
-            _what_alias_match_parse "$match"
-        done <<< "$matches"
+        printf '%s\n' "$matches" | while read -r match; do
+            _What_alias_match_parse "$match"
+        done
     else
-        _what_alias_match_parse
+        _What_alias_match_parse ''
     fi
 
     if [[ $print_definition == true ]]; then
         # Print the *current* definition.
-        _what_indent 2
+        _What_indent 2
         printf "definition: "
         alias -- "$alias"
     fi
-)
+) }
 
-_what_alias_match_parse(){
+function _What_alias_match_parse {
     local match="$1"
     local filename
     local line_num
+    local line
 
     if [[ -z $match ]]; then
-        _what_indent 2
+        _What_indent 2
         printf 'possible source: %s\n' '(not found)'
         return
     fi
 
     IFS=: read -r filename line_num line <<< "$match"
 
-    _what_indent 2
+    _What_indent 2
     printf 'possible source: %s:%s\n' "$filename" "$line_num"
 
     if [[ $print_definition == true ]]; then
         # Print the definition *from the file*.
-        _what_indent 3
+        _What_indent 3
         printf "definition: "
         sed 's/^ *//; s/ *$//' <<< "$line"  # Strip surrounding whitespace
     fi
 }
 
-_what_command()(
+function _What_command { (
     # Get info about a single command.
     #
     # Runs in a subshell to make it easier to avoid polluting the
@@ -74,8 +76,10 @@ _what_command()(
 
     command="$1"
     exit=0
+    # For printing hash in the right place
+    hash_encountered=false
 
-    _what_executable_bug "$command" || return 1
+    _What_executable_bug "$command" || return 1
 
     # Check command's status.
     if type -ta -- "$command" &> /dev/null; then
@@ -85,21 +89,24 @@ _what_command()(
         # Command is not availble, but is hashed.
         true
     elif [[ $more_info_command_not_found == true ]]; then
-        /usr/lib/command-not-found "$command"
+        "$command_not_found_handler" "$command"
         return 1
     else
         # Command not found.
-        printf >&2 '%s: %s: %s: Not found\n' "$basename" "$funcname" "$command"
+        printf >&2 '%s: %s: Not found: %s\n' "$basename" "$funcname" "$command"
         return 1
     fi
 
     printf '%s\n' "$command"
 
-    _what_hashed "$command"
-
     # Iterate over multiple types/instances of the command.
     for type in $(type -at -- "$command"); do
-        _what_indent 1
+        if [[ $type == file && $hash_encountered == false ]]; then
+            _What_hashed "$command"
+            hash_encountered=true
+        fi
+
+        _What_indent 1
         printf '%s\n' "$type"
 
         if [[ $print_type_only == true ]]; then
@@ -109,18 +116,18 @@ _what_command()(
         # Print command info.
         case $type in
         alias)
-            _what_alias "$command" ||
+            _What_alias "$command" ||
                 exit=1
             ;;
         builtin)
             ;;
         file)
             # Iterate over each file using bash math.
-            _what_file "$command" "$((file_count++))" ||
+            _What_file "$command" "$((file_count++))" ||
                 exit=1
             ;;
         function)
-            _what_function "$command" ||
+            _What_function "$command" ||
                 exit=1
             ;;
         keyword)
@@ -137,11 +144,15 @@ _what_command()(
         esac
     done
 
-    return $exit
-)
+    if [[ $hash_encountered == false ]]; then
+        _What_hashed "$command"
+    fi
 
-_what_executable_bug(){
-    # Give an error about the bug described in "_what_help".
+    return $exit
+) }
+
+function _What_executable_bug {
+    # Give an error about the issue described in "_What_info".
 
     local command
     local path
@@ -175,7 +186,7 @@ _what_executable_bug(){
     fi
 }
 
-_what_file()(
+function _What_file { (
     # Get info about a command which is a file.
 
     command="$1"
@@ -184,33 +195,32 @@ _what_file()(
     # Get command paths
     readarray -t paths <<< "$(type -pa -- "$command")"
 
-    _what_filepath "${paths[$path_number]}"
-)
+    _What_filepath "${paths[$path_number]}"
+) }
 
-_what_filepath()(
+function _What_filepath { (
     # Get info about an executable path.
 
     path="$1"
 
-    _what_indent 2
+    _What_indent 2
     printf 'path: %s\n' "$path"
 
     # If the file is a symlink.
     if [[ -L $path ]]; then
-        while IFS= read -r line; do
-            _what_indent 2
-            printf '%s\n' "$line"
-        done <<< "$(symlink-info "$path" | tail -n +2)"
+        symlink-info "$path" |
+            tail -n +2 |
+            _What_indent_many 2  # symlink-info already adds 1 indentation
     fi
 
     # Show brief file info.
-    _what_indent 2
+    _What_indent 2
     printf 'file type: '
     file -bL -- "$path" |
         cut -d, -f1
-)
+) }
 
-_what_function()(
+function _What_function { (
     # Get info about a function.
 
     function="$1"
@@ -225,11 +235,11 @@ _what_function()(
         )"
 
     # Print.
-    _what_indent 2
+    _What_indent 2
     printf 'source: %s:%s\n' "$filename" "$line_num"
 
     # Print export status.
-    _what_indent 2
+    _What_indent 2
     printf 'export: '
     if [[ $attrs == *x* ]]; then
         echo yes
@@ -239,45 +249,45 @@ _what_function()(
 
     if [[ $print_definition == true ]]; then
         # Print the function definition.
-        _what_indent 2
+        _What_indent 2
         printf 'definition:\n'
-        while IFS= read -r line; do
-            _what_indent 3
-            printf '%s\n' "$line"
-        done <<< "$(declare -f -- "$function")"
+        declare -f -- "$function" |
+            _What_indent_many 3
     fi
-)
+) }
 
-_what_hashed(){
+function _What_hashed {
     local command
     local hashpath
 
     command="$1"
 
-    if hashpath="$(hash -t -- "$command" 2>/dev/null)"; then
-        _what_indent 1
-        printf 'hashed\n'
-
-        if [[ $print_type_only == true ]]; then
-            return
-        fi
-
-        _what_indent 2
-        printf 'path: %s\n' "$hashpath"
-
-        if ! [[ -f $hashpath ]]; then
-            printf >&2 '%s: %s: %s: Hashed file does not exist: %s\n' \
-                "$basename" \
-                "$funcname" \
-                "$command" \
-                "$hashpath"
-            exit=1
-        fi
+    if ! hashpath="$(hash -t -- "$command" 2>/dev/null)"; then
+        return
     fi
+
+    _What_indent 1
+    printf 'hashed\n'
+
+    if ! [[ -f $hashpath ]]; then
+        printf >&2 '%s: %s: %s: Hashed file does not exist: %s\n' \
+            "$basename" \
+            "$funcname" \
+            "$command" \
+            "$hashpath"
+        exit=1
+    fi
+
+    if [[ $print_type_only == true ]]; then
+        return
+    fi
+
+    _What_indent 2
+    printf 'path: %s\n' "$hashpath"
 }
 
-_what_help(){
-    _what_usage
+function _What_help {
+    _What_usage
     echo
     cat <<'EOF'
 Give information about Bash command names, like a more thorough "type".
@@ -295,17 +305,18 @@ Options:
     -t      Print only types, similar to "type -at".
 
 Exit Status:
+    4 - Missing dependency ("symlink-info" or optionally the "-n" handler)
     3 - Invalid options
     1 - At least one NAME is not found, or any other error
     0 - otherwise
 EOF
 }
 
-_what_info(){
+function _What_info {
     cat <<'EOF'
 Info provided per type (types ordered by precedence):
     alias
-        - possible source file and line number
+        - possible source file(s) and line number(s)
             - (with option "-d": definition in file)
         - (with option "-d": current definition)
     keyword
@@ -315,12 +326,11 @@ Info provided per type (types ordered by precedence):
         - (with option "-d": definition)
     builtin
     hashed file (though not a type per se)
-        - path
         - (if hashed file does not exist: warning)
-    file
         - path
-            - (if symlink: target, recursively)
-            - (if relative symlink: canonical path)
+    file(s)
+        - path
+            - (if symlink: details from "symlink-info")
         - file type
 
 Always iterates over multiple types/instances, e.g:
@@ -329,37 +339,81 @@ Always iterates over multiple types/instances, e.g:
 
 For example:
     "what if type ls what zsh sh /"
-    - Covers keyword, builtin, alias/file, function, multiple files/absolute symlinks, relative symlink (on Debian/Ubuntu), and non-command.
+    - Covers keyword, builtin, alias/file, function, multiple
+      files/absolute symlinks, relative symlink (on Debian/Ubuntu),
+      and non-command.
 
 Known issues:
-    - Some versions of Bash have different output between "type COMMAND" and "type -a COMMAND" if COMMAND is a file but is not executable. "what" will error if affected.
+    - Bash may have different output between "type COMMAND" and
+      "type -a COMMAND" if COMMAND is a file but is not executable.
+      That includes:
+        - If the user doesn't have execute permissions to the file
+        - If the file is a directory
+        - If the file does not exist, as a hashed path
+      Some of this behaviour depends on the version of Bash.
+
+      Since "what" relies on the output of "type" to make sense of the
+      environment, it will print an error or warning if affected.
 EOF
 }
 
-_what_indent(){
-    # Indent by given number of indent levels.
-    local indent_string='    '
-    local end="$1"
+function _What_indent {
+    # Indent by the given number of indent levels.
+
+    local end="${1-1}"
+    local i
+    local indent_string="${2-    }"
+
     for ((i=1; i<="$end"; i++)); do
         printf '%s' "$indent_string"
     done
 }
 
-_what_usage(){
-    printf 'Usage: what [-hi] [-dnt] [name ...]\n'
+function _What_indent_many {
+    # Indent each line from stdin.
+    # Wraps "_What_indent".
+
+    local line
+
+    while IFS= read -r line; do
+        _What_indent "$@"
+        printf '%s\n' "$line"
+    done
 }
 
-what()(
-    # See _what_help and _what_usage.
+function _What_usage {
+    cat <<'EOF'
+Usage: what [-hi] [-dnt] [name ...]
+EOF
+}
+
+function what { (
+    # For details, see _What_help and _What_usage, as well as _What_info.
 
     unset IFS  # Just in case
 
+    # Defaults
     exit=0
 
     # Basename of caller, for error messages
     basename=$(basename -- "$0")
     # Name of the main function, for error messages.
     funcname="${FUNCNAME[0]}"
+
+    command_not_found_handler=/usr/lib/command-not-found
+
+    # Check dependencies
+    # shellcheck disable=SC2043  # Loop only runs once for one dependency
+    for dependency in symlink-info; do
+        # Check if command exists
+        if ! type -- "$dependency" &> /dev/null; then
+            printf >&2 '%s: %s: Missing dependency: %s\n' \
+                "$basename" \
+                "$funcname" \
+                "$dependency"
+            exit 4
+        fi
+    done
 
     OPTIND=1
     while getopts :dhint OPT; do
@@ -368,20 +422,21 @@ what()(
             print_definition=true
             ;;
         h)
-            _what_help
+            _What_help
             exit 0
             ;;
         i)
-            _what_info
+            _What_info
             exit 0
             ;;
         n)
-            if ! [[ -f /usr/lib/command-not-found ]]; then
-                printf >&2 '%s: %s: Missing required program for "-n": %s\n' \
+            if ! [[ -f $command_not_found_handler ]]; then
+                printf >&2 '%s: %s: Missing required program for "%s": %s\n' \
                     "$basename" \
                     "$funcname" \
-                    "/usr/lib/command-not-found"
-                exit 3
+                    "-$OPT" \
+                    "$command_not_found_handler"
+                exit 4
             fi
             more_info_command_not_found=true
             ;;
@@ -389,11 +444,11 @@ what()(
             print_type_only=true
             ;;
         *)
-            printf >&2 '%s: %s: Invalid option: -%s\n' \
+            printf >&2 '%s: %s: Invalid option: %s\n' \
                 "$basename" \
                 "$funcname" \
-                "$OPTARG"
-            _what_usage >&2
+                "-$OPTARG"
+            _What_usage >&2
             exit 3
             ;;
         esac
@@ -405,26 +460,26 @@ what()(
         while read -r line; do
             [[ -z $line ]] && continue  # Skip blank lines
 
-            _what_command "$line" ||
+            _What_command "$line" ||
                 exit=1
         done
     else
         for arg; do
-            _what_command "$arg" ||
+            _What_command "$arg" ||
                 exit=1
         done
     fi
 
     return $exit
-)
-
-# Enable command name completion
-complete -c what
+) }
 
 # End sourced section
 return 2>/dev/null
 
-printf >&2 \
-    '%s: Warning: This script is intended to be sourced from Bash, to provide the function "what".\n' \
-    "$(basename -- "$0")"
-what "$@"
+# shellcheck disable=SC2317  # Not unreachable if run as script
+{
+    printf >&2 \
+        '%s: Warning: This script is intended to be sourced from Bash, to provide the function "what".\n' \
+        "$(basename -- "$0")"
+    what "$@"
+}

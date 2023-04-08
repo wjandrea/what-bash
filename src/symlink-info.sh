@@ -1,16 +1,71 @@
 #!/bin/bash
+# Resolve a symlink, recursively and canonically.
+#
+# See functions "_usage" and "_help" for more details.
 
-_indent(){
-    # Indent by given number of indent levels.
-    local indent_string='    '
-    local end="$1"
+function _help {
+    _usage
+    echo
+    cat <<'EOF'
+Resolve a symlink, recursively and canonically.
+
+Arguments:
+    FILE    Filename of symlink to resolve.
+
+Options:
+    -h      Print this help message and exit.
+
+Info provided per symlink:
+    - target, recursively
+    - (if relative: canonical path)
+
+Exit Status:
+    3 - Invalid options
+    1 - At least one FILE is not found, or any other error
+    0 - otherwise
+EOF
+}
+
+function _usage {
+    cat <<'EOF'
+Usage: symlink-info [-h] [file ...]
+EOF
+}
+
+function _indent {
+    # Indent by the given number of indent levels.
+
+    local end="${1-1}"
+    local i
+    local indent_string="${2-    }"
+
     for ((i=1; i<="$end"; i++)); do
         printf '%s' "$indent_string"
     done
 }
 
-basename=$(basename -- "$0")  # For error messages
+basename=$(basename -- "$0")  # For error messages and help
+
+# Defaults
 exit=0
+
+OPTIND=1
+while getopts :h OPT; do
+    case $OPT in
+    h)
+        _help
+        exit 0
+        ;;
+    *)
+        printf >&2 '%s: Invalid option: -%s\n' \
+            "$basename" \
+            "$OPTARG"
+        _usage >&2
+        exit 3
+        ;;
+    esac
+done
+shift "$((OPTIND-1))"
 
 for path; do
     problem=

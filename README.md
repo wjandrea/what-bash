@@ -34,7 +34,12 @@ what
     function
         source: /home/wja/.local/lib/bash/what.sh:348
         export: no
-$ what awk sh ls  # A bit more complex
+```
+
+A bit more complex:
+
+```none
+$ what awk sh ls
 awk
     file
         path: /usr/bin/awk
@@ -55,7 +60,9 @@ ls
         file type: ELF 64-bit LSB shared object
 ```
 
-### Show definitions of aliases and functions
+#### Show definitions of aliases and functions
+
+Use `what -d`:
 
 ```none
 $ function foo { bar; }
@@ -76,7 +83,7 @@ ll
         definition: alias ll='ls -alF'
 ```
 
-Note that the source of a function can be traced, but not an alias. `what` basically guesses at alias sources. Specifically, it tries to find the source in the most common files, using a regex.
+Note that the source of a function can be traced, but not an alias. `what` basically guesses at alias sources. Specifically, it tries to find the alias name in the most common files, using a regex. It doesn't look at the definition, for example:
 
 ```none
 $ alias ll='do_something_else'
@@ -90,8 +97,10 @@ ll
 
 #### Show a problem with a hashed path
 
+If we create a bad hash:
+
 ```none
-$ hash -p /nonexistent FAKE_COMMAND  # Create a bad hash
+$ hash -p /nonexistent FAKE_COMMAND
 $ what FAKE_COMMAND
 bash: what: FAKE_COMMAND: File does not exist: /nonexistent
 ```
@@ -117,13 +126,17 @@ Options:
     -t      Print only types, similar to "type -at".
 
 Exit Status:
+    4 - Missing dependency ("symlink-info" or optionally the "-n" handler)
     3 - Invalid options
     1 - At least one NAME is not found, or any other error
     0 - otherwise
+```
+
+```none
 $ what -i
 Info provided per type (types ordered by precedence):
     alias
-        - possible source file and line number
+        - possible source file(s) and line number(s)
             - (with option "-d": definition in file)
         - (with option "-d": current definition)
     keyword
@@ -133,12 +146,11 @@ Info provided per type (types ordered by precedence):
         - (with option "-d": definition)
     builtin
     hashed file (though not a type per se)
-        - path
         - (if hashed file does not exist: warning)
-    file
         - path
-            - (if symlink: target, recursively)
-            - (if relative symlink: canonical path)
+    file(s)
+        - path
+            - (if symlink: details from "symlink-info")
         - file type
 
 Always iterates over multiple types/instances, e.g:
@@ -147,10 +159,21 @@ Always iterates over multiple types/instances, e.g:
 
 For example:
     "what if type ls what zsh sh /"
-    - Covers keyword, builtin, alias/file, function, multiple files/absolute symlinks, relative symlink (on Debian/Ubuntu), and non-command.
+    - Covers keyword, builtin, alias/file, function, multiple
+      files/absolute symlinks, relative symlink (on Debian/Ubuntu),
+      and non-command.
 
 Known issues:
-    - Some versions of Bash have different output between "type COMMAND" and "type -a COMMAND" if COMMAND is a file but is not executable. "what" will error if affected.
+    - Bash may have different output between "type COMMAND" and
+      "type -a COMMAND" if COMMAND is a file but is not executable.
+      That includes:
+        - If the user doesn't have execute permissions to the file
+        - If the file is a directory
+        - If the file does not exist, as a hashed path
+      Some of this behaviour depends on the version of Bash.
+
+      Since "what" relies on the output of "type" to make sense of the
+      environment, it will print an error or warning if affected.
 ```
 
 ## `symlink-info`
@@ -171,13 +194,53 @@ $ symlink-info /usr/bin/awk /bin/sh
     canonical path: /bin/dash
 ```
 
+### Help
+
+```none
+$ symlink-info -h
+Usage: symlink-info [-h] [file ...]
+
+Resolve a symlink, recursively and canonically.
+
+Arguments:
+    FILE    Filename of symlink to resolve.
+
+Options:
+    -h      Print this help message and exit.
+
+Info provided per symlink:
+    - target, recursively
+    - (if relative: canonical path)
+
+Exit Status:
+    3 - Invalid options
+    1 - At least one FILE is not found, or any other error
+    0 - otherwise
+```
+
 ## Installation
 
-`what` requires `symlink-info.sh` in the `$PATH` as `symlink-info`.
+Put `symlink-info.sh` in your `PATH` as `symlink-info`. Source `what.sh`.
 
-Everything else is your choice. For example you might want to put `what.sh` in your `$PATH`, then `source what.sh` on shell startup, so that you always have `what` available.
+Everything else is your choice. For example, you might want to source `what.sh` from your bashrc so that you always have `what` available.
 
-If you want command name completions, run `complete -c what`.
+For command name completion:
+
+```bash
+complete -c what
+```
+
+### In a pinch
+
+`cd` into the `src` directory, then:
+
+```bash
+hash -p "$PWD/symlink-info.sh" symlink-info &&
+    source "$PWD/what.sh" &&
+    complete -c what
+```
+
+(Using `$PWD` with `what.sh` so that there's a record of where `what` came from.)
 
 ### Requirements
 
@@ -187,19 +250,13 @@ If you want command name completions, run `complete -c what`.
 
 ## Development
 
-If you're editing `what.sh`, don't forget to source it before running it again, e.g. `source what.sh; what ...`
+If you're editing `what.sh`, don't forget to source it before running it again, e.g. `source ./what.sh; what ...`
 
 ## Roadmap
-
-* Break the indentation functions into their own script
 
 `what`
 
 * Add colour
-
-`symlink-info`
-
-* Break into functions to allow sourcing from `what` for quicker execution on slow systems
 
 ## License
 
