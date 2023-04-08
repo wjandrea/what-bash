@@ -245,7 +245,7 @@ hash -p "$PWD/symlink-info.sh" symlink-info &&
 ### Requirements
 
 * Bash 4.3+
-    * Untested on earlier versions, and most later versions for that matter
+    * Untested on earlier versions
 * Intended for Debian/Ubuntu, but should work on other Linux distros
 
 ## Development
