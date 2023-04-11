@@ -1,3 +1,5 @@
+![banner image](https://raw.githubusercontent.com/wjandrea/what-bash/images/banner.png)
+
 # what-bash
 
 `what` is a Bash function that gets info about a command, like what exactly it is and where. It can help with understanding a command's behaviour and troubleshooting issues. For example, if you run an executable, delete it, then try running it again, Bash may try to run the file that you just deleted (due to pathname hashing), leading to a confusing error message. `what` will tell you about that problem.
@@ -261,3 +263,8 @@ If you're editing `what.sh`, don't forget to source it before running it again, 
 ## License
 
 GNU GPLv3
+
+## Image credits
+
+- Theme: [Solarized Dark](https://ethanschoonover.com/solarized/) by Ethan Schoonover
+- Font: [Ubuntu Mono](https://design.ubuntu.com/font)
