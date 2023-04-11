@@ -1,4 +1,4 @@
-![banner image](https://raw.githubusercontent.com/wjandrea/what-bash/images/banner.png)
+![banner image](https://raw.githubusercontent.com/wjandrea/what-bash/main/images/banner.png)
 
 # what-bash
 
