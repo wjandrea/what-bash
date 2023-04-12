@@ -58,7 +58,7 @@ while getopts :hv OPT; do
         exit 0
         ;;
     v)
-        echo "symlink-info 0.2.1"
+        echo "symlink-info 0.2.2"
         exit 0
         ;;
     *)
@@ -74,10 +74,12 @@ shift "$((OPTIND-1))"
 
 for path; do
     problem=
-    if ! [[ -e $path ]]; then
-        problem='No such file'
-    elif ! [[ -L $path ]]; then
-        problem='Not a symlink'
+    if ! [[ -L $path ]]; then
+        if ! [[ -e $path ]]; then
+            problem='No such file'
+        else
+            problem='Not a symlink'
+        fi
     fi
 
     if [[ $problem ]]; then
