@@ -8,12 +8,6 @@ Along with it is `symlink-info`, which details complicated symlinks. `what` uses
 
 ## `what`
 
-### Usage
-
-Source `what.sh` to get the function `what`. Then run `what` with the names of commands.
-
-`what.sh` can also be run directly, but it's not recommended since it won't have access to the active shell environment, e.g. aliases.
-
 ### Examples
 
 (I ran these on my computer running Ubuntu 18.04.)
@@ -222,7 +216,9 @@ Exit Status:
 
 ## Installation
 
-Put `symlink-info.sh` in your `PATH` as `symlink-info`. Source `what.sh`.
+Put `symlink-info.sh` in your `PATH` as `symlink-info`. Source `what.sh` to get the function `what`.
+
+`what.sh` can also be run directly, but it's not recommended since it won't have access to the active shell environment, e.g. aliases.
 
 Everything else is your choice. For example, you might want to source `what.sh` from your bashrc so that you always have `what` available.
 
