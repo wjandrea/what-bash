@@ -209,6 +209,7 @@ Options:
 Info provided per symlink:
     - target, recursively
     - (if relative: canonical path)
+    - (if broken: warning)
 
 Exit Status:
     3 - Invalid options

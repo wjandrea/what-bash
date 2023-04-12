@@ -19,6 +19,7 @@ Options:
 Info provided per symlink:
     - target, recursively
     - (if relative: canonical path)
+    - (if broken: warning)
 
 Exit Status:
     3 - Invalid options
@@ -58,7 +59,7 @@ while getopts :hv OPT; do
         exit 0
         ;;
     v)
-        echo "symlink-info 0.2.2"
+        echo "symlink-info 0.3.0"
         exit 0
         ;;
     *)
@@ -110,6 +111,13 @@ for path; do
     if [[ $path_canonical != "$target" ]]; then
         _indent 1
         printf 'canonical path: %s\n' "$path_canonical"
+    fi
+
+    if [[ ! -e $path_canonical ]]; then
+        printf >&2 "%s: Warning: Broken symlink. Target does not exist: %s\n" \
+            "$basename" \
+            "$path_canonical"
+        exit=1
     fi
 done
 
