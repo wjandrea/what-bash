@@ -89,25 +89,23 @@ for path; do
     printf '%s\n' "$path"
     # While loop accounts for multi-level symlinks
     while [[ -L $path ]]; do
-        link_deref="$(readlink -- "$path")"
+        target="$(readlink -- "$path")"
 
-        # Print the dereferenced file info.
         _indent 1
-        printf 'symlink: %s\n' "$link_deref"
+        printf 'symlink: %s\n' "$target"
 
-        # If deref'd path starts with a slash.
-        if [[ "$link_deref" == /* ]]; then
-            # Link is absolute.
-            path="$link_deref"
+        if [[ $target == /* ]]; then
+            # Target is absolute.
+            path="$target"
         else
-            # Link is relative, so get absolute path.
-            path="${path%/*}/$link_deref"
+            # Target is relative, so get absolute path.
+            path="${path%/*}/$target"
         fi
     done
 
     # Canonical path
     path_canonical="$(readlink -m -- "$path")"
-    if [[ $path_canonical != "$link_deref" ]]; then
+    if [[ $path_canonical != "$target" ]]; then
         _indent 1
         printf 'canonical path: %s\n' "$path_canonical"
     fi
