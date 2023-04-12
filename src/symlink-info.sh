@@ -58,7 +58,7 @@ while getopts :hv OPT; do
         exit 0
         ;;
     v)
-        echo "symlink-info 0.2.0"
+        echo "symlink-info 0.2.1"
         exit 0
         ;;
     *)
@@ -98,8 +98,8 @@ for path; do
             # Target is absolute.
             path="$target"
         else
-            # Target is relative, so get absolute path.
-            path="${path%/*}/$target"
+            # Target is relative, so join with path dirname.
+            path="$(dirname -- "$path")/$target"
         fi
     done
 
