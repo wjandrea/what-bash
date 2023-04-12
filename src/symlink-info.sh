@@ -14,6 +14,7 @@ Arguments:
 
 Options:
     -h      Print this help message and exit.
+    -v      Print the version and exit.
 
 Info provided per symlink:
     - target, recursively
@@ -50,10 +51,14 @@ basename=$(basename -- "$0")  # For error messages and help
 exit=0
 
 OPTIND=1
-while getopts :h OPT; do
+while getopts :hv OPT; do
     case $OPT in
     h)
         _help
+        exit 0
+        ;;
+    v)
+        echo "symlink-info 0.2.0"
         exit 0
         ;;
     *)

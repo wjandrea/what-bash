@@ -120,6 +120,7 @@ Options:
     -n      Provide more info if a command is not found.
             Uses "/usr/lib/command-not-found" (available on Debian/Ubuntu)
     -t      Print only types, similar to "type -at".
+    -v      Print the version and exit.
 
 Exit Status:
     4 - Missing dependency ("symlink-info" or optionally the "-n" handler)
@@ -203,6 +204,7 @@ Arguments:
 
 Options:
     -h      Print this help message and exit.
+    -v      Print the version and exit.
 
 Info provided per symlink:
     - target, recursively

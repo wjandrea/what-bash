@@ -303,6 +303,7 @@ Options:
     -n      Provide more info if a command is not found.
             Uses "/usr/lib/command-not-found" (available on Debian/Ubuntu)
     -t      Print only types, similar to "type -at".
+    -v      Print the version and exit.
 
 Exit Status:
     4 - Missing dependency ("symlink-info" or optionally the "-n" handler)
@@ -416,7 +417,7 @@ function what { (
     done
 
     OPTIND=1
-    while getopts :dhint OPT; do
+    while getopts :dhintv OPT; do
         case $OPT in
         d)
             print_definition=true
@@ -442,6 +443,10 @@ function what { (
             ;;
         t)
             print_type_only=true
+            ;;
+        v)
+            echo "what 0.2.0"
+            exit 0
             ;;
         *)
             printf >&2 '%s: %s: Invalid option: %s\n' \
