@@ -30,7 +30,7 @@ EOF
 
 function _usage {
     cat <<'EOF'
-Usage: symlink-info [-h] [file ...]
+Usage: symlink-info [-hv] [file ...]
 EOF
 }
 

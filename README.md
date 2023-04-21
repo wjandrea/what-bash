@@ -105,7 +105,7 @@ bash: what: FAKE_COMMAND: File does not exist: /nonexistent
 
 ```none
 $ what -h
-Usage: what [-hi] [-dnt] [name ...]
+Usage: what [-hiv] [-dnt] [name ...]
 
 Give information about Bash command names, like a more thorough "type".
 
@@ -195,7 +195,7 @@ $ symlink-info /usr/bin/awk /bin/sh
 
 ```none
 $ symlink-info -h
-Usage: symlink-info [-h] [file ...]
+Usage: symlink-info [-hv] [file ...]
 
 Resolve a symlink, recursively and canonically.
 

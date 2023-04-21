@@ -384,7 +384,7 @@ function _What_indent_many {
 
 function _What_usage {
     cat <<'EOF'
-Usage: what [-hi] [-dnt] [name ...]
+Usage: what [-hiv] [-dnt] [name ...]
 EOF
 }
 
