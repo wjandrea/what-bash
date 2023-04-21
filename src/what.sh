@@ -393,6 +393,9 @@ function what { (
 
     unset IFS  # Just in case
 
+    # Static
+    version='0.3.2'
+
     # Defaults
     exit=0
 
@@ -445,7 +448,7 @@ function what { (
             print_type_only=true
             ;;
         v)
-            echo "what 0.2.0"
+            echo "what $version"
             exit 0
             ;;
         *)

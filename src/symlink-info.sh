@@ -48,6 +48,9 @@ function _indent {
 
 basename=$(basename -- "$0")  # For error messages and help
 
+# Static
+version='0.3.2'
+
 # Defaults
 exit=0
 
@@ -59,7 +62,7 @@ while getopts :hv OPT; do
         exit 0
         ;;
     v)
-        echo "symlink-info 0.3.0"
+        echo "symlink-info $version"
         exit 0
         ;;
     *)
