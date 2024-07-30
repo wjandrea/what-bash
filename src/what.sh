@@ -4,6 +4,11 @@
 # For more details, see functions _What_usage and _What_help
 # as well as _What_info.
 
+## COLOR
+GREEN="\033[0;32m"
+NORMAL="\033[0;00m"
+RED="\033[0;31m"
+
 function _What_alias { (
     # Get info about an alias.
 
@@ -38,7 +43,8 @@ function _What_alias { (
     if [[ $print_definition == true ]]; then
         # Print the *current* definition.
         _What_indent 2
-        printf "definition: "
+    # shellcheck disable=SC2059  
+        printf "${GREEN}definition${NORMAL}: "
         alias -- "$alias"
     fi
 ) }
@@ -51,19 +57,20 @@ function _What_alias_match_parse {
 
     if [[ -z $match ]]; then
         _What_indent 2
-        printf 'possible source: %s\n' '(not found)'
+        printf "${GREEN}possible source:${NORMAL} %s\n" '(not found)'
         return
     fi
 
     IFS=: read -r filename line_num line <<< "$match"
 
     _What_indent 2
-    printf 'possible source: %s:%s\n' "$filename" "$line_num"
+    printf "${GREEN}possible source:${NORMAL} %s:%s\n" "$filename" "$line_num"
 
     if [[ $print_definition == true ]]; then
         # Print the definition *from the file*.
         _What_indent 3
-        printf "definition: "
+    # shellcheck disable=SC2059  
+        printf "${GREEN}definition${NORMAL}: "
         sed 's/^ *//; s/ *$//' <<< "$line"  # Strip surrounding whitespace
     fi
 }
@@ -107,7 +114,7 @@ function _What_command { (
         fi
 
         _What_indent 1
-        printf '%s\n' "$type"
+        printf "${RED}%s\n${NORMAL}" "$type"
 
         if [[ $print_type_only == true ]]; then
             continue
@@ -204,7 +211,7 @@ function _What_filepath { (
     path="$1"
 
     _What_indent 2
-    printf 'path: %s\n' "$path"
+    printf "${GREEN}path:${NORMAL} %s\n" "$path"
 
     # If the file is a symlink.
     if [[ -L $path ]]; then
@@ -215,7 +222,8 @@ function _What_filepath { (
 
     # Show brief file info.
     _What_indent 2
-    printf 'file type: '
+    # shellcheck disable=SC2059  
+    printf "${GREEN}file type:${NORMAL} "
     file -bL -- "$path" |
         cut -d, -f1
 ) }
@@ -228,7 +236,7 @@ function _What_function { (
     read -r _ attrs _ <<< "$(declare -pF -- "$function")"
 
     # Find the source by turning on extended debugging.
-    # Looping not required because only one definition exists at a time.
+    # Looping not required because only one  exists at a time.
     read -r _ line_num filename <<< "$(
         shopt -s extdebug
         declare -F -- "$function"
@@ -236,11 +244,12 @@ function _What_function { (
 
     # Print.
     _What_indent 2
-    printf 'source: %s:%s\n' "$filename" "$line_num"
+    printf "${GREEN}source${NORMAL}: %s:%s\n" "$filename" "$line_num"
 
     # Print export status.
     _What_indent 2
-    printf 'export: '
+    # shellcheck disable=SC2059  
+    printf "${GREEN}export${NORMAL}: "
     if [[ $attrs == *x* ]]; then
         echo yes
     else
@@ -250,7 +259,9 @@ function _What_function { (
     if [[ $print_definition == true ]]; then
         # Print the function definition.
         _What_indent 2
-        printf 'definition:\n'
+    # shellcheck disable=SC2059  
+        printf "${GREEN}definition${NORMAL}:\n"
+
         declare -f -- "$function" |
             _What_indent_many 3
     fi
@@ -267,7 +278,8 @@ function _What_hashed {
     fi
 
     _What_indent 1
-    printf 'hashed\n'
+		# shellcheck disable=SC2059
+    printf "${RED}hashed${NORMAL}\n"
 
     if ! [[ -f $hashpath ]]; then
         printf >&2 '%s: %s: %s: Hashed file does not exist: %s\n' \
@@ -283,7 +295,7 @@ function _What_hashed {
     fi
 
     _What_indent 2
-    printf 'path: %s\n' "$hashpath"
+    printf "${GREEN}path:${NORMAL} %s\n" "$hashpath"
 }
 
 function _What_help {

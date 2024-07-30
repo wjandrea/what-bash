@@ -3,6 +3,10 @@
 #
 # See functions "_usage" and "_help" for more details.
 
+## COLOR
+GREEN="\033[0;32m"
+NORMAL="\033[0;00m"
+
 function _help {
     _usage
     echo
@@ -98,7 +102,7 @@ for path; do
         target="$(readlink -- "$path")"
 
         _indent 1
-        printf 'symlink: %s\n' "$target"
+        printf "${GREEN}symlink${NORMAL}: %s\n" "$target"
 
         if [[ $target == /* ]]; then
             # Target is absolute.
@@ -113,7 +117,7 @@ for path; do
     path_canonical="$(readlink -m -- "$path")"
     if [[ $path_canonical != "$target" ]]; then
         _indent 1
-        printf 'canonical path: %s\n' "$path_canonical"
+        printf "${GREEN}canonical path${NORMAL}: %s\n" "$path_canonical"
     fi
 
     if [[ ! -e $path_canonical ]]; then
