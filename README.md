@@ -217,6 +217,12 @@ Exit Status:
     0 - otherwise
 ```
 
+### See also
+
+- [`namei`](https://manpages.debian.org/util-linux/namei.1.html) - follow a pathname until a terminal point is found
+    - Can be used to show symlinks in the directory path to a file
+    - You might hear me call this `roots`, like the opposite of `tree`
+
 ## Installation
 
 Put `symlink-info.sh` in your `PATH` as `symlink-info`. Source `what.sh` to get the function `what`.
