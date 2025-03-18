@@ -16,45 +16,14 @@ Along with it is `symlink-info`, which details complicated symlinks. `what` uses
 
 Show basic info about a variety of commands:
 
-```none
-$ what if type find what
-if
-    keyword
-type
-    builtin
-find
-    file
-        path: /usr/bin/find
-        file type: ELF 64-bit LSB shared object
-what
-    function
-        source: /home/wja/.local/lib/bash/what.sh:348
-        export: no
-```
+![what-color-1](https://github.com/user-attachments/assets/c5354c3d-dfed-4ac7-a57f-13aeb4c4627c)
+
 
 A bit more complex:
 
-```none
-$ what awk sh ls
-awk
-    file
-        path: /usr/bin/awk
-            symlink: /etc/alternatives/awk
-            symlink: /usr/bin/mawk
-        file type: ELF 64-bit LSB shared object
-sh
-    file
-        path: /bin/sh
-            symlink: dash
-            canonical path: /bin/dash
-        file type: ELF 64-bit LSB shared object
-ls
-    alias
-        possible source: /home/wja/.bash_aliases
-    file
-        path: /bin/ls
-        file type: ELF 64-bit LSB shared object
-```
+![what-bash-color2](https://github.com/user-attachments/assets/d9c6cc08-2f7d-4e04-8e55-c6b4e7ebe5a7)
+
+
 
 #### Show definitions of aliases and functions
 
@@ -62,22 +31,9 @@ Use `what -d`:
 
 ```none
 $ function foo { bar; }
-$ what -d foo ll
-foo
-    function
-        source: main:2
-        export: no
-        definition:
-            foo ()
-            {
-                bar
-            }
-ll
-    alias
-        possible source: /home/wja/.bash_aliases:25
-            definition: alias ll='ls -alF'  # all, long, classified
-        definition: alias ll='ls -alF'
 ```
+![what-bash-color3](https://github.com/user-attachments/assets/cb421d8c-4a68-40de-b084-ddbd99913aa9)
+
 
 Note that the source of a function can be traced, but not an alias. `what` basically guesses at alias sources. Specifically, it tries to find the alias name in the most common files, using a regex. It doesn't look at the definition, for example:
 
@@ -181,15 +137,7 @@ Resolve a symlink, recursively and canonically
 
 Borrowing from the above `what` example:
 
-```none
-$ symlink-info /usr/bin/awk /bin/sh
-/usr/bin/awk
-    symlink: /etc/alternatives/awk
-    symlink: /usr/bin/mawk
-/bin/sh
-    symlink: dash
-    canonical path: /bin/dash
-```
+![symlink-color-1](https://github.com/user-attachments/assets/96bfafcf-439c-4b17-9942-62b76a60be1c)
 
 ### Help
 
